@@ -74,7 +74,7 @@ export class MercadoPagoService {
               last_name: input.customer.name.split(" ").slice(1).join(" ") || "3D",
             },
             external_reference: input.orderId,
-            notification_url: `${process.env.NEXT_PUBLIC_SITE_URL || "https://3dcommerce.local"}/api/webhooks/mercadopago`,
+            notification_url: `${process.env.NEXT_PUBLIC_APP_URL || process.env.NEXT_PUBLIC_SITE_URL || "https://kavuno.com.br"}/api/webhooks/mercadopago`,
           }),
         });
 

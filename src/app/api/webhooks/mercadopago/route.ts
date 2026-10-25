@@ -144,7 +144,8 @@ export async function POST(request: NextRequest) {
             await (supabaseAdmin.from("analytics_events") as any).insert({
               event_name: "payment_confirmed",
               session_id: "wh_" + Math.random().toString(36).substring(2, 10),
-              order_id: payment.order_id,
+              entity_type: "order",
+              entity_id: payment.order_id,
               metadata: {
                 gateway: "mercado_pago",
                 external_payment_id: externalEventId,

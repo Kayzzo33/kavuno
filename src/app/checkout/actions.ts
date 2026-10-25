@@ -277,7 +277,8 @@ export async function processCheckoutAction(
       await (supabaseAdmin.from("analytics_events") as any).insert({
         event_name: "order_created",
         session_id: "chk_" + Math.random().toString(36).substring(2, 10),
-        order_id: orderId,
+        entity_type: "order",
+        entity_id: orderId,
         metadata: {
           order_number: orderNumber,
           total_amount: authoritativeTotal,

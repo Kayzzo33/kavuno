@@ -118,3 +118,17 @@ Este plano traça o roteiro de entrega do projeto **3D Commerce**, dividindo o d
   - Documentação para Portfólio Profissional: `README.md` estruturado com declaração explícita de Direitos Autorais (Lei nº 9.610/1998) e proteção de autoria exclusiva por Kayky, além de `docs/OPERATIONS.md` completo com checklist de deploy e operações.
   - Suíte de testes automatizados (`src/tests/analytics_seo_test.ts` e `npm run test:analytics`) com 21/21 testes aprovados.
   - *Critério de Aceite:* Typecheck 100% limpo (`npx tsc --noEmit`), todas as 21 rotas compilando perfeitamente e cobertura completa dos critérios da B.8.
+- [x] **Etapa B.9 — Auditoria Abrangente de Segurança, Privacidade, Conformidade Legal e SEO**
+  - Inspeção rigorosa de código, migrations, dependências (`package.json`), fluxos de autenticação, checkout, reservas e telemetria.
+  - Elaboração de 5 documentos canônicos de governança e diagnóstico técnico:
+    - `docs/COMPLIANCE_AUDIT.md`: Relatório executivo de conformidade, classificação de riscos (ACH-01 a ACH-10) e critérios de bloqueio pré-lançamento.
+    - `docs/PRIVACY_DATA_MAP.md`: Mapeamento de todos os 7 fluxos de dados pessoais sob a LGPD (bases legais, armazenamento, prazos de retenção e matriz do Art. 18).
+    - `docs/THIRD_PARTY_SERVICES.md`: Inventário exaustivo de terceiros (Supabase, Mercado Pago, Google Search Console), cookies (Zero terceiros) e confirmação de fontes locais (Zero Google Fonts).
+    - `docs/LEGAL_OPEN_QUESTIONS.md`: Decisões mandatórias do proprietário (CNPJ/CPF, DPO, SAC, CDC Art. 49 e direitos autorais de STL/modelos 3D).
+    - `docs/SEO_AUDIT.md`: Auditoria de metatags dinâmicas, sitemap XML, robots.txt, JSON-LD Schema.org (`Organization`, `WebSite`, `Product`) e performance CWV.
+  - Correção cirúrgica de inconsistência de schema em `analytics_events` (inserção correta de `entity_type: 'order'` e `entity_id` no checkout e webhook).
+  - *Critério de Aceite:* Mapa completo e verificável de riscos sem declaração precipitada de conformidade jurídica definitiva, com plano estruturado para a Etapa B.10.
+- [ ] **Etapa B.10 — Implementação das Correções de Conformidade, Políticas e Publicação**
+  - Criação das páginas institucionais de Termos de Uso, Política de Privacidade e Trocas/Devoluções.
+  - Atualização do rodapé com campos do fornecedor e canal de privacidade para titulares de dados.
+  - Implementação das recomendações priorizadas da auditoria B.9 e preparação final para homologação e publicação.
