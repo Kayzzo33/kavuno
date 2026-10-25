@@ -1,0 +1,196 @@
+/* ============================================================================
+   3D COMMERCE - DESIGN SYSTEM TOKENS (Layer & Street)
+   ============================================================================ */
+
+:root {
+  /* 1. Cores de Superfície e Fundo */
+  --bg-canvas: #0a0c0f;
+  --bg-surface: #12151b;
+  --bg-surface-elevated: #181d24;
+  --bg-surface-hover: #1e232c;
+
+  /* 2. Cores de Borda e Estrutura */
+  --border-subtle: #222731;
+  --border-medium: #303744;
+  --border-strong: #424c5e;
+  --border-active: #ff5c00;
+
+  /* 3. Cores de Texto e Contraste */
+  --text-primary: #f3f4f6;
+  --text-secondary: #9ca3af;
+  --text-muted: #6b7280;
+  --text-inverse: #0a0c0f;
+
+  /* 4. Acento Primário Geek + Street (Industrial Orange) */
+  --color-primary: #ff5c00;
+  --color-primary-hover: #e05200;
+  --color-primary-subtle: rgba(255, 92, 0, 0.12);
+  --color-primary-border: rgba(255, 92, 0, 0.35);
+
+  /* 5. Cores Semânticas de Domínio (Modalidades 3D) */
+  --mode-in-stock: #10b981;
+  --mode-in-stock-subtle: rgba(16, 185, 129, 0.12);
+  --mode-in-stock-border: rgba(16, 185, 129, 0.4);
+
+  --mode-pre-order: #f59e0b;
+  --mode-pre-order-subtle: rgba(245, 158, 11, 0.12);
+  --mode-pre-order-border: rgba(245, 158, 11, 0.4);
+
+  --mode-interest: #38bdf8;
+  --mode-interest-subtle: rgba(56, 189, 248, 0.12);
+  --mode-interest-border: rgba(56, 189, 248, 0.4);
+
+  --status-error: #ef4444;
+  --status-error-subtle: rgba(239, 68, 68, 0.12);
+
+  /* 6. Tipografia */
+  --font-sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  --font-mono: "JetBrains Mono", "SF Mono", Menlo, Monaco, Consolas, "Liberation Mono", monospace;
+
+  /* 7. Espaçamentos & Layout */
+  --spacing-xs: 0.25rem;
+  --spacing-sm: 0.5rem;
+  --spacing-md: 1rem;
+  --spacing-lg: 1.5rem;
+  --spacing-xl: 2rem;
+  --spacing-2xl: 3rem;
+  --max-width-content: 1200px;
+
+  /* 8. Transições & Raios */
+  --radius-sm: 3px;
+  --radius-md: 6px;
+  --radius-lg: 8px;
+  --transition-fast: 150ms cubic-bezier(0.4, 0, 0.2, 1);
+  --transition-normal: 200ms cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Base Reset e Elementos */
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  background-color: var(--bg-canvas);
+  color: var(--text-primary);
+  font-family: var(--font-sans);
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+/* ============================================================================
+   PADRÃO: BORDAS PARCIALMENTE INTERROMPIDAS (Corner Brackets)
+   ============================================================================ */
+
+.bracket-box {
+  position: relative;
+  background-color: var(--bg-surface);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-sm);
+  padding: var(--spacing-lg);
+  transition: border-color var(--transition-fast), background-color var(--transition-fast);
+}
+
+/* Cantoneiras técnicas superiores e inferiores */
+.bracket-box::before,
+.bracket-box::after {
+  content: "";
+  position: absolute;
+  width: 10px;
+  height: 10px;
+  pointer-events: none;
+  transition: border-color var(--transition-fast);
+}
+
+.bracket-box::before {
+  top: -1px;
+  left: -1px;
+  border-top: 2px solid var(--color-primary);
+  border-left: 2px solid var(--color-primary);
+}
+
+.bracket-box::after {
+  bottom: -1px;
+  right: -1px;
+  border-bottom: 2px solid var(--color-primary);
+  border-right: 2px solid var(--color-primary);
+}
+
+.bracket-box:hover {
+  border-color: var(--border-medium);
+}
+
+.bracket-box:hover::before,
+.bracket-box:hover::after {
+  border-color: var(--color-primary-hover);
+}
+
+/* ============================================================================
+   UTILITÁRIOS E BADGES COMERCIAIS
+   ============================================================================ */
+
+.badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.375rem;
+  padding: 0.25rem 0.625rem;
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  border-radius: var(--radius-sm);
+  border: 1px solid transparent;
+}
+
+.badge-in-stock {
+  background-color: var(--mode-in-stock-subtle);
+  color: var(--mode-in-stock);
+  border-color: var(--mode-in-stock-border);
+}
+
+.badge-pre-order {
+  background-color: var(--mode-pre-order-subtle);
+  color: var(--mode-pre-order);
+  border-color: var(--mode-pre-order-border);
+}
+
+.badge-interest {
+  background-color: var(--mode-interest-subtle);
+  color: var(--mode-interest);
+  border-color: var(--mode-interest-border);
+}
+
+.badge-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background-color: currentColor;
+}
+
+/* Layout Container */
+.container {
+  width: 100%;
+  max-width: var(--max-width-content);
+  margin-left: auto;
+  margin-right: auto;
+  padding-left: var(--spacing-md);
+  padding-right: var(--spacing-md);
+}
+
+@media (min-width: 768px) {
+  .container {
+    padding-left: var(--spacing-xl);
+    padding-right: var(--spacing-xl);
+  }
+}

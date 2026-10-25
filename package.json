@@ -1,0 +1,32 @@
+{
+  "name": "3d-commerce",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "next lint",
+    "typecheck": "tsc --noEmit",
+    "test:auth": "node --env-file=.env.local --experimental-strip-types src/tests/auth_security_test.ts",
+    "test:catalog": "node --env-file=.env.local --experimental-strip-types src/tests/catalog_lead_test.ts",
+    "test:admin": "node --env-file=.env.local --experimental-strip-types src/tests/admin_security_test.ts",
+    "test:checkout": "node --env-file=.env.local --experimental-strip-types src/tests/checkout_payments_test.ts",
+    "test:finance": "node --env-file=.env.local --experimental-strip-types src/tests/financial_module_test.ts"
+  },
+  "dependencies": {
+    "@supabase/ssr": "^0.5.2",
+    "@supabase/supabase-js": "^2.49.1",
+    "next": "^15.2.1",
+    "react": "^19.0.0",
+    "react-dom": "^19.0.0"
+  },
+  "devDependencies": {
+    "@types/node": "^22.13.9",
+    "@types/react": "^19.0.10",
+    "@types/react-dom": "^19.0.4",
+    "eslint": "^9.21.0",
+    "eslint-config-next": "^15.2.1",
+    "typescript": "^5.8.2"
+  }
+}
