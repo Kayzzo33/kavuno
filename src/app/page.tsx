@@ -5,6 +5,7 @@ import { Badge } from "@/components/ui/Badge";
 import { Button } from "@/components/ui/Button";
 import { Card } from "@/components/ui/Card";
 import { ProductCard } from "@/components/catalog/ProductCard";
+import { CampaignBannerTracker } from "@/components/analytics/CampaignBannerTracker";
 
 export const dynamic = "force-dynamic";
 
@@ -195,41 +196,9 @@ export default async function HomePage() {
           )}
         </section>
 
-        {/* Seção das Campanhas de Validação Ativas */}
+        {/* Seção das Campanhas de Validação Ativas — com rastreamento de banner */}
         {campaigns.length > 0 && (
-          <section id="validacao" style={{ marginBottom: "var(--spacing-2xl)" }}>
-            <div style={{ marginBottom: "var(--spacing-lg)" }}>
-              <span style={{ fontFamily: "var(--font-mono)", fontSize: "0.75rem", color: "var(--mode-interest)" }}>
-                // CALIBRAÇÃO DE DEMANDA
-              </span>
-              <h2 style={{ fontFamily: "var(--font-mono)", fontSize: "1.75rem", fontWeight: 700, marginTop: "0.25rem" }}>
-                Campanhas Abertas para Reserva
-              </h2>
-            </div>
-
-            <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(300px, 1fr))", gap: "var(--spacing-lg)" }}>
-              {campaigns.map((camp) => (
-                <Card
-                  key={camp.id}
-                  variant="bracket"
-                  headerBadge={<Badge mode={camp.commercial_mode} />}
-                >
-                  <h3 style={{ fontFamily: "var(--font-mono)", fontSize: "1.125rem", fontWeight: 700, marginBottom: "0.5rem" }}>
-                    {camp.title}
-                  </h3>
-                  <p style={{ fontSize: "0.875rem", color: "var(--text-secondary)", lineHeight: 1.5, marginBottom: "var(--spacing-md)" }}>
-                    {camp.description}
-                  </p>
-                  <div style={{ fontFamily: "var(--font-mono)", fontSize: "0.75rem", color: "var(--text-muted)", marginBottom: "var(--spacing-md)" }}>
-                    META DO LOTE: {camp.target_min_units} UNIDADES // RESERVAS: {camp.current_units_pledged}
-                  </div>
-                  <Link href={`/validacao`} className="btn btn-bracket" style={{ width: "100%", textAlign: "center" }}>
-                    DETALHES DA CAMPANHA
-                  </Link>
-                </Card>
-              ))}
-            </div>
-          </section>
+          <CampaignBannerTracker campaigns={campaigns} />
         )}
 
         {/* Modalidades Comerciais Canônicas */}

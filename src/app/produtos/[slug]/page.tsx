@@ -3,6 +3,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { getProductBySlug } from "@/lib/catalog/queries";
+import { createAdminClient } from "@/lib/supabase/admin";
 import { ProductGallery } from "@/components/catalog/ProductGallery";
 import { ProductDetailClient } from "@/components/catalog/ProductDetailClient";
 import { Card } from "@/components/ui/Card";
@@ -11,6 +12,23 @@ interface ProductPageProps {
   params: Promise<{
     slug: string;
   }>;
+}
+
+/**
+ * Pré-renderiza todos os slugs de produtos ativos em build-time para
+ * melhor desempenho de SEO (ISR via revalidate ou export estático).
+ */
+export async function generateStaticParams(): Promise<{ slug: string }[]> {
+  try {
+    const supabase = createAdminClient();
+    const { data: products } = await supabase
+      .from("products")
+      .select("slug")
+      .eq("is_active", true);
+    return (products ?? []).map((p) => ({ slug: p.slug }));
+  } catch {
+    return [];
+  }
 }
 
 export async function generateMetadata({
@@ -49,8 +67,41 @@ export default async function ProductDetailPage({ params }: ProductPageProps) {
     notFound();
   }
 
+  const appUrl = process.env.NEXT_PUBLIC_APP_URL || "https://kavuno.com.br";
+  const primaryImage = product.images?.find((img) => img.is_primary) || product.images?.[0];
+  const finalPrice = product.promotional_price && product.promotional_price > 0
+    ? product.promotional_price
+    : product.base_price;
+
+  // JSON-LD Schema.org Product para SEO e Rich Results do Google
+  const jsonLdProduct = {
+    "@context": "https://schema.org",
+    "@type": "Product",
+    name: product.name,
+    description: product.short_description || product.full_description || undefined,
+    url: `${appUrl}/produtos/${product.slug}`,
+    image: primaryImage?.image_url ? [primaryImage.image_url] : undefined,
+    brand: { "@type": "Brand", name: "KAVUNO" },
+    offers: {
+      "@type": "Offer",
+      priceCurrency: "BRL",
+      price: finalPrice.toFixed(2),
+      availability:
+        product.commercial_mode === "in_stock"
+          ? "https://schema.org/InStock"
+          : "https://schema.org/PreOrder",
+      url: `${appUrl}/produtos/${product.slug}`,
+      seller: { "@type": "Organization", name: "KAVUNO" },
+    },
+  };
+
   return (
     <div style={{ paddingTop: "var(--spacing-xl)", paddingBottom: "var(--spacing-2xl)" }}>
+      {/* JSON-LD Estruturado para Produto */}
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLdProduct) }}
+      />
       <div className="container">
         {/* Breadcrumb Técnico */}
         <nav

@@ -12,7 +12,9 @@
     "test:catalog": "node --env-file=.env.local --experimental-strip-types src/tests/catalog_lead_test.ts",
     "test:admin": "node --env-file=.env.local --experimental-strip-types src/tests/admin_security_test.ts",
     "test:checkout": "node --env-file=.env.local --experimental-strip-types src/tests/checkout_payments_test.ts",
-    "test:finance": "node --env-file=.env.local --experimental-strip-types src/tests/financial_module_test.ts"
+    "test:finance": "node --env-file=.env.local --experimental-strip-types src/tests/financial_module_test.ts",
+    "test:analytics": "node --experimental-strip-types src/tests/analytics_seo_test.ts",
+    "test": "npm run test:auth && npm run test:catalog && npm run test:admin && npm run test:checkout && npm run test:finance && npm run test:analytics"
   },
   "dependencies": {
     "@supabase/ssr": "^0.5.2",

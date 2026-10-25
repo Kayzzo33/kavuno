@@ -109,5 +109,12 @@ Este plano traça o roteiro de entrega do projeto **3D Commerce**, dividindo o d
   - Painel administrativo financeiro (`/admin/financeiro`) com 5 abas operacionais e design Geek + Street.
   - Suite de testes automatizados (`src/tests/financial_module_test.ts` e `npm run test:finance`) com 11/11 testes passando.
   - *Critério de Aceite:* Build de produção Next.js 15 compilando todas as 20 rotas da aplicação, typecheck estrito (tsc) sem erros e 100% dos testes financeiros aprovados.
-- [ ] **Etapa B.8 — Analytics, Testes E2E e Deploy**
-  - Funil de conversão LGPD-compliant, testes finais e deploy na Vercel/Supabase.
+- [x] **Etapa B.8 — Analytics, Qualidade, SEO e Deploy**
+  - Migration `20261015000006_analytics_and_observability.sql`: Tabela `analytics_events` particionável, índices otimizados, e função `log_analytics_event` com validação defensiva contra PII (e-mail, CPF, telefone, cartão).
+  - Telemetria LGPD-compliant no client e server (`src/lib/analytics/tracker.ts`, `CampaignBannerTracker.tsx`, `CookieConsentBanner.tsx`) com controle de consentimento, hash anônimo e sanitização de dados.
+  - Cobertura completa de eventos: visualizações de produto, buscas, filtros, seleção de variantes, banners de campanha (view/click), adições/remoções do carrinho, início de checkout, cupom aplicado, pedidos criados, leads de reserva e confirmação de pagamento.
+  - Painel Administrativo de Analytics (`/admin/analytics`): Funil de conversão de 5 etapas, taxas de drop-off, diagnóstico de desempenho de produtos e oportunidades de catálogo (buscas sem resultado).
+  - SEO Completo: `sitemap.ts` dinâmico com produtos ativos, `robots.ts` com proteção de rotas privadas, JSON-LD Schema.org Product com ofertas dinâmicas, metadados OpenGraph/Twitter e `generateStaticParams` para SSG/ISR.
+  - Documentação para Portfólio Profissional: `README.md` estruturado com declaração explícita de Direitos Autorais (Lei nº 9.610/1998) e proteção de autoria exclusiva por Kayky, além de `docs/OPERATIONS.md` completo com checklist de deploy e operações.
+  - Suíte de testes automatizados (`src/tests/analytics_seo_test.ts` e `npm run test:analytics`) com 21/21 testes aprovados.
+  - *Critério de Aceite:* Typecheck 100% limpo (`npx tsc --noEmit`), todas as 21 rotas compilando perfeitamente e cobertura completa dos critérios da B.8.

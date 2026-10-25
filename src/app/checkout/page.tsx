@@ -36,7 +36,7 @@ export default function CheckoutPage() {
   // Gera uma idempotencyKey para o pedido na montagem da tela
   const [idempotencyKey] = useState(() => `idemp_${Date.now()}_${Math.random().toString(36).substring(2, 9)}`);
 
-  // Dispara evento anônimo checkout_start
+  // Dispara evento anônimo checkout_start (uma vez ao montar com itens)
   useEffect(() => {
     if (items.length > 0) {
       trackClientEvent({
@@ -47,6 +47,7 @@ export default function CheckoutPage() {
         },
       });
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -92,6 +93,28 @@ export default function CheckoutPage() {
     if (!result.success) {
       setErrorMessage(result.error || "Ocorreu um erro ao processar o checkout.");
     } else {
+      // Rastreia cupom aplicado (se informado e pedido criado com sucesso)
+      if (formData.couponCode.trim()) {
+        trackClientEvent({
+          eventName: "coupon_applied",
+          metadata: {
+            coupon_code: formData.couponCode.trim().toUpperCase(),
+            order_number: result.orderNumber,
+          },
+        });
+      }
+      // Rastreia conversão de pedido criado (Zero-PII)
+      trackClientEvent({
+        eventName: "order_created",
+        entityType: "order",
+        entityId: result.orderId,
+        metadata: {
+          order_number: result.orderNumber,
+          total_amount: result.totalAmount,
+          payment_method: formData.paymentMethod,
+          items_count: items.length,
+        },
+      });
       setCheckoutResult(result);
       clearCart();
     }
