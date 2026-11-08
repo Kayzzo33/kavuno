@@ -9,8 +9,13 @@ interface CookieToSet {
 }
 
 export async function middleware(request: NextRequest) {
+  const requestHeaders = new Headers(request.headers);
+  requestHeaders.set("x-pathname", request.nextUrl.pathname);
+
   let supabaseResponse = NextResponse.next({
-    request,
+    request: {
+      headers: requestHeaders,
+    },
   });
 
   const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
@@ -28,7 +33,9 @@ export async function middleware(request: NextRequest) {
       setAll(cookiesToSet: CookieToSet[]) {
         cookiesToSet.forEach(({ name, value }) => request.cookies.set(name, value));
         supabaseResponse = NextResponse.next({
-          request,
+          request: {
+            headers: requestHeaders,
+          },
         });
         cookiesToSet.forEach(({ name, value, options }) =>
           supabaseResponse.cookies.set(name, value, options)
@@ -42,12 +49,22 @@ export async function middleware(request: NextRequest) {
     data: { user },
   } = await supabase.auth.getUser();
 
+  const pathname = request.nextUrl.pathname;
+
+  // Rotas de login administrativo são públicas para autenticação
+  const isAdminLogin = pathname === "/admin-login" || pathname === "/admin/login";
+
+  // Se já estiver logado e tentar acessar o login admin, deixa prosseguir para renderizar ou redirecionar
+  if (isAdminLogin) {
+    return supabaseResponse;
+  }
+
   // Proteção prévia em nível de rota para /admin/*
-  if (request.nextUrl.pathname.startsWith("/admin")) {
+  if (pathname.startsWith("/admin") || pathname.startsWith("/painel-admin")) {
     if (!user) {
-      const loginUrl = new URL("/login", request.url);
-      loginUrl.searchParams.set("mensagem", "acesso_restrito");
-      return NextResponse.redirect(loginUrl);
+      const adminLoginUrl = new URL("/admin-login", request.url);
+      adminLoginUrl.searchParams.set("error", "session_required");
+      return NextResponse.redirect(adminLoginUrl);
     }
   }
 

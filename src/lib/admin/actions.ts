@@ -1,6 +1,7 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
+import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { requireAdminSession } from "@/lib/admin/queries";
 
@@ -12,6 +13,51 @@ export interface AdminActionResult {
   message?: string;
   error?: string;
   id?: string;
+}
+
+// ============================================================================
+// AUTENTICAÇÃO ADMINISTRATIVA DEDICADA
+// ============================================================================
+
+export async function adminSignInAction(
+  _prev: AdminActionResult | null,
+  formData: FormData
+): Promise<AdminActionResult> {
+  const email = (formData.get("email") as string)?.trim();
+  const password = formData.get("password") as string;
+
+  if (!email || !password) {
+    return { success: false, error: "Por favor, preencha o e-mail e a senha administrativa." };
+  }
+
+  const supabase = await createClient();
+
+  const { data: authData, error: authError } = await supabase.auth.signInWithPassword({
+    email,
+    password,
+  });
+
+  if (authError || !authData.user) {
+    return { success: false, error: "Credenciais de administrador incorretas ou não encontradas." };
+  }
+
+  // Validação estrita de role admin
+  const { data: profile, error: profileError } = await (supabase.from("profiles") as any)
+    .select("role")
+    .eq("id", authData.user.id)
+    .single();
+
+  if (profileError || !profile || profile.role !== "admin") {
+    // Não permite login de cliente no portal administrativo
+    await supabase.auth.signOut();
+    return {
+      success: false,
+      error: "Acesso negado: Esta conta não possui permissões administrativas. Clientes devem acessar a loja pelo portal de clientes.",
+    };
+  }
+
+  revalidatePath("/admin", "layout");
+  redirect("/admin");
 }
 
 // ---------------------------------------------------------------------------

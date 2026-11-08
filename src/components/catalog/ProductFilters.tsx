@@ -27,8 +27,6 @@ export const ProductFilters: React.FC<ProductFiltersProps> = ({ categories }) =>
 
   const applyFilters = (updates: Record<string, string | null>) => {
     const params = new URLSearchParams(searchParams.toString());
-
-    // Resetar página ao mudar filtros
     params.delete("page");
 
     Object.entries(updates).forEach(([key, value]) => {
@@ -60,29 +58,11 @@ export const ProductFilters: React.FC<ProductFiltersProps> = ({ categories }) =>
   const handleCategoryChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     const val = e.target.value;
     setSelectedCategory(val);
-    if (val) {
-      trackClientEvent({
-        eventName: "filter_applied",
-        metadata: {
-          filter_type: "category",
-          filter_value: val,
-        },
-      });
-    }
     applyFilters({ categoria: val });
   };
 
   const handleModeClick = (mode: CommercialMode | "") => {
     setSelectedMode(mode);
-    if (mode) {
-      trackClientEvent({
-        eventName: "filter_applied",
-        metadata: {
-          filter_type: "commercial_mode",
-          filter_value: mode,
-        },
-      });
-    }
     applyFilters({ modalidade: mode || null });
   };
 
@@ -108,10 +88,10 @@ export const ProductFilters: React.FC<ProductFiltersProps> = ({ categories }) =>
     <div
       style={{
         backgroundColor: "var(--bg-surface)",
-        border: "1px solid var(--border-subtle)",
-        borderRadius: "var(--radius-sm)",
-        padding: "var(--spacing-md)",
-        marginBottom: "var(--spacing-xl)",
+        border: "1px solid var(--border-medium)",
+        borderRadius: "var(--radius-lg)",
+        padding: "1.25rem",
+        marginBottom: "2rem",
       }}
     >
       {/* Barra de Pesquisa */}
@@ -120,23 +100,23 @@ export const ProductFilters: React.FC<ProductFiltersProps> = ({ categories }) =>
         style={{
           display: "flex",
           gap: "0.5rem",
-          marginBottom: "var(--spacing-md)",
+          marginBottom: "1rem",
         }}
       >
         <input
           type="text"
           value={search}
           onChange={(e) => setSearch(e.target.value)}
-          placeholder="Pesquisar por modelo 3D, nome ou descrição..."
+          placeholder="Pesquisar por modelo 3D, nome ou material..."
           className="form-input"
-          style={{ flex: 1 }}
+          style={{ flex: 1, borderRadius: "var(--radius-md)" }}
         />
-        <Button type="submit" variant="primary" isLoading={isPending}>
-          BUSCAR
+        <Button type="submit" variant="primary" isLoading={isPending} style={{ borderRadius: "var(--radius-md)", padding: "0.5rem 1.5rem" }}>
+          Buscar
         </Button>
       </form>
 
-      {/* Linha de Filtros: Modalidade, Categoria e Ordenação */}
+      {/* Linha de Filtros: Pronta Entrega / Sob Encomenda, Categorias e Ordenação */}
       <div
         style={{
           display: "flex",
@@ -146,39 +126,31 @@ export const ProductFilters: React.FC<ProductFiltersProps> = ({ categories }) =>
           gap: "1rem",
         }}
       >
-        {/* Botões de Modalidade Comercial */}
+        {/* Filtros Rápidos de Disponibilidade */}
         <div style={{ display: "flex", flexWrap: "wrap", gap: "0.5rem" }}>
           <button
             type="button"
             onClick={() => handleModeClick("")}
-            className={`btn ${selectedMode === "" ? "btn-primary" : "btn-bracket"}`}
-            style={{ fontSize: "0.75rem", padding: "0.35rem 0.75rem" }}
+            className={`btn ${selectedMode === "" ? "btn-primary" : "btn-secondary"}`}
+            style={{ fontSize: "0.8125rem", padding: "0.45rem 0.95rem", borderRadius: "var(--radius-md)" }}
           >
-            TODOS OS PRODUTOS
+            Todos os Itens
           </button>
           <button
             type="button"
             onClick={() => handleModeClick("in_stock")}
-            className={`btn ${selectedMode === "in_stock" ? "btn-primary" : "btn-bracket"}`}
-            style={{ fontSize: "0.75rem", padding: "0.35rem 0.75rem" }}
+            className={`btn ${selectedMode === "in_stock" ? "btn-primary" : "btn-secondary"}`}
+            style={{ fontSize: "0.8125rem", padding: "0.45rem 0.95rem", borderRadius: "var(--radius-md)" }}
           >
-            PRONTA ENTREGA
+            ⚡ Pronta Entrega
           </button>
           <button
             type="button"
             onClick={() => handleModeClick("pre_order")}
-            className={`btn ${selectedMode === "pre_order" ? "btn-primary" : "btn-bracket"}`}
-            style={{ fontSize: "0.75rem", padding: "0.35rem 0.75rem" }}
+            className={`btn ${selectedMode === "pre_order" ? "btn-primary" : "btn-secondary"}`}
+            style={{ fontSize: "0.8125rem", padding: "0.45rem 0.95rem", borderRadius: "var(--radius-md)" }}
           >
-            PRÉ-VENDA
-          </button>
-          <button
-            type="button"
-            onClick={() => handleModeClick("interest_lead")}
-            className={`btn ${selectedMode === "interest_lead" ? "btn-primary" : "btn-bracket"}`}
-            style={{ fontSize: "0.75rem", padding: "0.35rem 0.75rem" }}
-          >
-            VALIDAÇÃO DE DEMANDA
+            Sob Encomenda
           </button>
         </div>
 
@@ -191,7 +163,8 @@ export const ProductFilters: React.FC<ProductFiltersProps> = ({ categories }) =>
               className="form-select"
               style={{
                 fontSize: "0.8125rem",
-                padding: "0.4rem 0.75rem",
+                padding: "0.45rem 0.85rem",
+                borderRadius: "var(--radius-md)",
                 width: "auto",
               }}
             >
@@ -210,7 +183,8 @@ export const ProductFilters: React.FC<ProductFiltersProps> = ({ categories }) =>
             className="form-select"
             style={{
               fontSize: "0.8125rem",
-              padding: "0.4rem 0.75rem",
+              padding: "0.45rem 0.85rem",
+              borderRadius: "var(--radius-md)",
               width: "auto",
             }}
           >
@@ -226,14 +200,14 @@ export const ProductFilters: React.FC<ProductFiltersProps> = ({ categories }) =>
               style={{
                 background: "none",
                 border: "none",
-                fontFamily: "var(--font-mono)",
-                fontSize: "0.75rem",
+                fontSize: "0.8125rem",
                 color: "var(--status-error)",
                 cursor: "pointer",
                 textDecoration: "underline",
+                padding: "0.3rem 0.5rem",
               }}
             >
-              Limpar Filtros
+              Limpar filtros
             </button>
           )}
         </div>

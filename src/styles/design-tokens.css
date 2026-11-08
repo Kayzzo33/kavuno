@@ -1,51 +1,57 @@
 /* ============================================================================
-   3D COMMERCE - DESIGN SYSTEM TOKENS (Layer & Street)
+   KAVUNO 3D COMMERCE - DESIGN SYSTEM TOKENS (Modern E-commerce)
    ============================================================================ */
 
 :root {
   /* 1. Cores de Superfície e Fundo */
-  --bg-canvas: #0a0c0f;
-  --bg-surface: #12151b;
-  --bg-surface-elevated: #181d24;
-  --bg-surface-hover: #1e232c;
+  --bg-canvas: #090b0e;
+  --bg-surface: #11141a;
+  --bg-surface-elevated: #171b22;
+  --bg-surface-hover: #1e2430;
+  --bg-card: #131720;
+  --bg-card-hover: #191f2c;
 
   /* 2. Cores de Borda e Estrutura */
-  --border-subtle: #222731;
-  --border-medium: #303744;
-  --border-strong: #424c5e;
+  --border-subtle: #232936;
+  --border-medium: #323b4d;
+  --border-strong: #47546c;
   --border-active: #ff5c00;
 
   /* 3. Cores de Texto e Contraste */
-  --text-primary: #f3f4f6;
-  --text-secondary: #9ca3af;
-  --text-muted: #6b7280;
-  --text-inverse: #0a0c0f;
+  --text-primary: #f8fafc;
+  --text-secondary: #94a3b8;
+  --text-muted: #64748b;
+  --text-inverse: #090b0e;
 
-  /* 4. Acento Primário Geek + Street (Industrial Orange) */
+  /* 4. Acento Primário Geek + Laranja Vibrante */
   --color-primary: #ff5c00;
   --color-primary-hover: #e05200;
   --color-primary-subtle: rgba(255, 92, 0, 0.12);
   --color-primary-border: rgba(255, 92, 0, 0.35);
 
+  /* Acento Secundário (Azul Tech estilo Mercado Livre / Shopee) */
+  --color-accent-blue: #2563eb;
+  --color-accent-blue-hover: #1d4ed8;
+
   /* 5. Cores Semânticas de Domínio (Modalidades 3D) */
   --mode-in-stock: #10b981;
-  --mode-in-stock-subtle: rgba(16, 185, 129, 0.12);
-  --mode-in-stock-border: rgba(16, 185, 129, 0.4);
+  --mode-in-stock-subtle: rgba(16, 185, 129, 0.14);
+  --mode-in-stock-border: rgba(16, 185, 129, 0.45);
 
   --mode-pre-order: #f59e0b;
-  --mode-pre-order-subtle: rgba(245, 158, 11, 0.12);
-  --mode-pre-order-border: rgba(245, 158, 11, 0.4);
+  --mode-pre-order-subtle: rgba(245, 158, 11, 0.14);
+  --mode-pre-order-border: rgba(245, 158, 11, 0.45);
 
   --mode-interest: #38bdf8;
-  --mode-interest-subtle: rgba(56, 189, 248, 0.12);
-  --mode-interest-border: rgba(56, 189, 248, 0.4);
+  --mode-interest-subtle: rgba(56, 189, 248, 0.14);
+  --mode-interest-border: rgba(56, 189, 248, 0.45);
 
   --status-error: #ef4444;
-  --status-error-subtle: rgba(239, 68, 68, 0.12);
+  --status-error-subtle: rgba(239, 68, 68, 0.14);
 
   /* 6. Tipografia */
-  --font-sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
-  --font-mono: "JetBrains Mono", "SF Mono", Menlo, Monaco, Consolas, "Liberation Mono", monospace;
+  --font-sans: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  --font-mono: "JetBrains Mono", "SF Mono", Menlo, Monaco, Consolas, monospace;
 
   /* 7. Espaçamentos & Layout */
   --spacing-xs: 0.25rem;
@@ -54,14 +60,22 @@
   --spacing-lg: 1.5rem;
   --spacing-xl: 2rem;
   --spacing-2xl: 3rem;
-  --max-width-content: 1200px;
+  --max-width-content: 1280px;
 
-  /* 8. Transições & Raios */
-  --radius-sm: 3px;
-  --radius-md: 6px;
-  --radius-lg: 8px;
+  /* 8. Transições & Raios Modernos */
+  --radius-sm: 6px;
+  --radius-md: 10px;
+  --radius-lg: 14px;
+  --radius-xl: 20px;
+  --radius-full: 9999px;
+
+  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.2);
+  --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.35);
+  --shadow-lg: 0 8px 24px rgba(0, 0, 0, 0.45);
+  --shadow-glow: 0 0 25px rgba(255, 92, 0, 0.2);
+
   --transition-fast: 150ms cubic-bezier(0.4, 0, 0.2, 1);
-  --transition-normal: 200ms cubic-bezier(0.4, 0, 0.2, 1);
+  --transition-normal: 250ms cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 /* Base Reset e Elementos */

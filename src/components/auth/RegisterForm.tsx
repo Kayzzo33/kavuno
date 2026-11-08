@@ -7,35 +7,67 @@ import { Button } from "@/components/ui/Button";
 import { Input } from "@/components/ui/Input";
 import { Alert } from "@/components/ui/Alert";
 import { Card } from "@/components/ui/Card";
+import { GoogleAuthButton } from "@/components/auth/GoogleAuthButton";
 
 export const RegisterForm: React.FC = () => {
   const [state, formAction, isPending] = useActionState(signUpAction, null);
 
   return (
-    <Card variant="bracket" style={{ maxWidth: "480px", margin: "0 auto" }}>
-      <div style={{ marginBottom: "var(--spacing-lg)" }}>
-        <div style={{ fontFamily: "var(--font-mono)", fontSize: "0.75rem", color: "var(--color-primary)", marginBottom: "0.25rem" }}>
-          // NOVO REGISTRO // PERFIL CLIENTE
-        </div>
-        <h1 style={{ fontFamily: "var(--font-mono)", fontSize: "1.5rem", fontWeight: 700 }}>
-          CRIAR CONTA
+    <Card
+      style={{
+        maxWidth: "480px",
+        margin: "0 auto",
+        backgroundColor: "var(--bg-surface)",
+        border: "1px solid var(--border-medium)",
+        borderRadius: "var(--radius-lg)",
+        padding: "var(--spacing-xl)",
+        boxShadow: "var(--shadow-md)",
+      }}
+    >
+      <div style={{ textAlign: "center", marginBottom: "var(--spacing-xl)" }}>
+        <h1
+          style={{
+            fontSize: "1.625rem",
+            fontWeight: 800,
+            color: "var(--text-primary)",
+            letterSpacing: "-0.02em",
+          }}
+        >
+          Crie sua conta
         </h1>
-        <p style={{ fontSize: "0.875rem", color: "var(--text-secondary)", marginTop: "0.25rem" }}>
-          Cadastre-se para reservar produtos sem custo ou participar de pré-vendas.
+        <p style={{ fontSize: "0.875rem", color: "var(--text-secondary)", marginTop: "0.35rem" }}>
+          Tenha acesso exclusivo a lançamentos 3D, pronta entrega e promoções.
         </p>
       </div>
 
       {state?.error && (
-        <Alert type="error" title="FALHA NO CADASTRO">
+        <Alert type="error" title="Não foi possível criar a conta">
           {state.error}
         </Alert>
       )}
 
       {state?.success && state.message && (
-        <Alert type="success" title="CADASTRO INICIADO">
+        <Alert type="success" title="Conta Criada!">
           {state.message}
         </Alert>
       )}
+
+      <GoogleAuthButton text="Cadastrar com o Google" redirectTo="/perfil" />
+
+      <div
+        style={{
+          display: "flex",
+          alignItems: "center",
+          gap: "1rem",
+          margin: "1.25rem 0",
+        }}
+      >
+        <div style={{ flex: 1, height: "1px", backgroundColor: "var(--border-subtle)" }} />
+        <span style={{ fontSize: "0.75rem", color: "var(--text-muted)", textTransform: "uppercase" }}>
+          ou com e-mail
+        </span>
+        <div style={{ flex: 1, height: "1px", backgroundColor: "var(--border-subtle)" }} />
+      </div>
 
       <form action={formAction}>
         <Input
@@ -63,7 +95,7 @@ export const RegisterForm: React.FC = () => {
           required
           placeholder="Mínimo de 6 caracteres"
           autoComplete="new-password"
-          helperText="Use letras, números e símbolos para maior segurança."
+          helperText="Use letras e números para maior segurança."
         />
 
         <Input
@@ -83,7 +115,7 @@ export const RegisterForm: React.FC = () => {
             style={{ marginTop: "0.25rem", cursor: "pointer", accentColor: "var(--color-primary)" }}
           />
           <label htmlFor="marketingConsent" style={{ fontSize: "0.8125rem", color: "var(--text-secondary)", cursor: "pointer", lineHeight: 1.4 }}>
-            Aceito receber comunicações sobre novas campanhas de impressão 3D, lotes de produção e cupons exclusivos (LGPD-compliant).
+            Quero receber novidades de novas peças impressas em 3D e cupons promocionais.
           </label>
         </div>
 
@@ -92,31 +124,38 @@ export const RegisterForm: React.FC = () => {
           variant="primary"
           size="lg"
           isLoading={isPending}
-          style={{ width: "100%", marginBottom: "var(--spacing-lg)" }}
+          style={{
+            width: "100%",
+            height: "2.85rem",
+            fontSize: "1rem",
+            fontWeight: 700,
+            borderRadius: "var(--radius-md)",
+            marginBottom: "var(--spacing-lg)",
+          }}
         >
-          REGISTRAR // CONTA NOVA
+          Criar Minha Conta
         </Button>
       </form>
 
       <div
         style={{
           borderTop: "1px solid var(--border-subtle)",
-          paddingTop: "var(--spacing-md)",
+          paddingTop: "var(--spacing-lg)",
           textAlign: "center",
-          fontSize: "0.8125rem",
+          fontSize: "0.875rem",
           color: "var(--text-secondary)",
         }}
       >
-        Já possui uma conta?{" "}
+        Já tem uma conta?{" "}
         <Link
           href="/login"
           style={{
             color: "var(--color-primary)",
-            fontWeight: 600,
-            fontFamily: "var(--font-mono)",
+            fontWeight: 700,
+            textDecoration: "none",
           }}
         >
-          Acesse pelo login
+          Fazer login
         </Link>
       </div>
     </Card>

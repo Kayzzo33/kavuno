@@ -2,8 +2,6 @@ import React from "react";
 import Link from "next/link";
 import Image from "next/image";
 import type { ProductWithDetails } from "@/lib/catalog/queries";
-import { Badge } from "@/components/ui/Badge";
-import { Card } from "@/components/ui/Card";
 
 export interface ProductCardProps {
   product: ProductWithDetails;
@@ -13,6 +11,10 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
   const primaryImage = product.images?.find((img) => img.is_primary) || product.images?.[0];
   const hasPromo = product.promotional_price !== null && product.promotional_price > 0;
   const displayPrice = hasPromo ? product.promotional_price! : product.base_price;
+
+  const discountPercentage = hasPromo
+    ? Math.round(((product.base_price - product.promotional_price!) / product.base_price) * 100)
+    : 0;
 
   const formattedPrice = new Intl.NumberFormat("pt-BR", {
     style: "currency",
@@ -26,189 +28,191 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
       }).format(product.base_price)
     : null;
 
+  const installmentValue = (displayPrice / 3).toFixed(2).replace(".", ",");
+
+  const isProntaEntrega = product.commercial_mode === "in_stock";
+
   return (
-    <Card
-      variant="bracket"
-      style={{
-        display: "flex",
-        flexDirection: "column",
-        height: "100%",
-        padding: "var(--spacing-md)",
-      }}
-    >
-      {/* Imagem do Produto */}
-      <div
-        style={{
-          position: "relative",
-          width: "100%",
-          paddingTop: "75%", // Aspect Ratio 4:3
-          backgroundColor: "var(--bg-canvas)",
-          border: "1px solid var(--border-subtle)",
-          borderRadius: "var(--radius-sm)",
-          overflow: "hidden",
-          marginBottom: "var(--spacing-md)",
-        }}
-      >
-        {primaryImage?.image_url ? (
-          <Image
-            src={primaryImage.image_url}
-            alt={primaryImage.alt_text || product.name}
-            fill
-            sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-            style={{ objectFit: "cover" }}
-          />
-        ) : (
-          <div
+    <div className="product-card-modern">
+      {/* Container de Imagem com Aspect Ratio Quadrado */}
+      <Link href={`/produtos/${product.slug}`} style={{ textDecoration: "none" }}>
+        <div className="product-image-container">
+          {primaryImage?.image_url ? (
+            <Image
+              src={primaryImage.image_url}
+              alt={primaryImage.alt_text || product.name}
+              fill
+              sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+              style={{ objectFit: "cover" }}
+            />
+          ) : (
+            <div
+              style={{
+                position: "absolute",
+                inset: 0,
+                display: "flex",
+                flexDirection: "column",
+                alignItems: "center",
+                justifyContent: "center",
+                background: "linear-gradient(135deg, #131720 0%, #1c2230 100%)",
+                gap: "0.5rem",
+                color: "var(--text-muted)",
+              }}
+            >
+              <div
+                style={{
+                  width: "56px",
+                  height: "56px",
+                  borderRadius: "var(--radius-full)",
+                  backgroundColor: "rgba(255, 92, 0, 0.1)",
+                  border: "1px solid rgba(255, 92, 0, 0.2)",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  fontSize: "1.75rem",
+                }}
+              >
+                🦾
+              </div>
+              <span style={{ fontSize: "0.75rem", fontWeight: 600, color: "var(--text-secondary)" }}>
+                Peça 3D de Alta Resolução
+              </span>
+            </div>
+          )}
+
+          {/* Badge Comercial (Pronta Entrega / Sob Encomenda) */}
+          <div style={{ position: "absolute", top: "0.75rem", left: "0.75rem", zIndex: 2 }}>
+            {isProntaEntrega ? (
+              <span className="badge-commercial badge-in-stock-pill">
+                ⚡ Pronta Entrega
+              </span>
+            ) : (
+              <span className="badge-commercial badge-pre-order-pill">
+                Sob Encomenda
+              </span>
+            )}
+          </div>
+
+          {/* Badge de Desconto */}
+          {hasPromo && discountPercentage > 0 && (
+            <div
+              style={{
+                position: "absolute",
+                top: "0.75rem",
+                right: "0.75rem",
+                backgroundColor: "var(--color-primary)",
+                color: "#ffffff",
+                padding: "0.2rem 0.5rem",
+                borderRadius: "var(--radius-sm)",
+                fontSize: "0.6875rem",
+                fontWeight: 800,
+                zIndex: 2,
+              }}
+            >
+              -{discountPercentage}%
+            </div>
+          )}
+        </div>
+      </Link>
+
+      {/* Conteúdo do Card */}
+      <div style={{ padding: "1rem", display: "flex", flexDirection: "column", flex: 1 }}>
+        {/* Categoria */}
+        {product.category && (
+          <span
             style={{
-              position: "absolute",
-              inset: 0,
-              display: "flex",
-              flexDirection: "column",
-              alignItems: "center",
-              justifyContent: "center",
-              fontFamily: "var(--font-mono)",
-              fontSize: "0.75rem",
-              color: "var(--text-muted)",
-              backgroundColor: "var(--bg-canvas)",
-              gap: "0.25rem",
+              fontSize: "0.6875rem",
+              fontWeight: 700,
+              textTransform: "uppercase",
+              letterSpacing: "0.05em",
+              color: "var(--color-primary)",
+              marginBottom: "0.35rem",
             }}
           >
-            <span>[ IMAGEM 3D // INDISPONÍVEL ]</span>
-            <span style={{ fontSize: "0.6875rem" }}>SKU: {product.slug}</span>
-          </div>
+            {product.category.name}
+          </span>
         )}
 
-        {/* Badge da Modalidade Comercial */}
-        <div style={{ position: "absolute", top: "0.5rem", left: "0.5rem" }}>
-          <Badge mode={product.commercial_mode} />
-        </div>
-      </div>
-
-      {/* Categoria */}
-      {product.category && (
-        <div
+        {/* Título do Produto */}
+        <h3
           style={{
-            fontFamily: "var(--font-mono)",
-            fontSize: "0.6875rem",
-            color: "var(--color-primary)",
-            textTransform: "uppercase",
-            marginBottom: "0.25rem",
-          }}
-        >
-          {product.category.name}
-        </div>
-      )}
-
-      {/* Título do Produto */}
-      <h3
-        style={{
-          fontFamily: "var(--font-mono)",
-          fontSize: "1rem",
-          fontWeight: 700,
-          lineHeight: 1.3,
-          marginBottom: "0.5rem",
-          flex: 1,
-        }}
-      >
-        <Link
-          href={`/produtos/${product.slug}`}
-          style={{ color: "var(--text-primary)", transition: "color var(--transition-fast)" }}
-        >
-          {product.name}
-        </Link>
-      </h3>
-
-      {/* Descrição Curta */}
-      {product.short_description && (
-        <p
-          style={{
-            fontSize: "0.8125rem",
-            color: "var(--text-secondary)",
-            lineHeight: 1.4,
-            marginBottom: "var(--spacing-md)",
+            fontSize: "0.9375rem",
+            fontWeight: 700,
+            lineHeight: 1.35,
+            marginBottom: "0.5rem",
+            color: "var(--text-primary)",
             display: "-webkit-box",
             WebkitLineClamp: 2,
             WebkitBoxOrient: "vertical",
             overflow: "hidden",
+            minHeight: "2.5rem",
           }}
         >
-          {product.short_description}
-        </p>
-      )}
+          <Link
+            href={`/produtos/${product.slug}`}
+            style={{ color: "inherit", textDecoration: "none" }}
+          >
+            {product.name}
+          </Link>
+        </h3>
 
-      {/* Detalhes Técnicos de Variantes */}
-      <div
-        style={{
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "space-between",
-          fontFamily: "var(--font-mono)",
-          fontSize: "0.75rem",
-          color: "var(--text-muted)",
-          paddingTop: "0.5rem",
-          borderTop: "1px solid var(--border-subtle)",
-          marginBottom: "var(--spacing-md)",
-        }}
-      >
-        <span>
-          {product.variants?.length
-            ? `${product.variants.length} variante(s)`
-            : "Modelo único"}
-        </span>
-        {product.variants?.[0]?.filament_material && (
-          <span style={{ textTransform: "uppercase", color: "var(--text-secondary)" }}>
-            MAT: {product.variants[0].filament_material}
+        {/* Avaliação em Estrelas (Estilo Mercado Livre / Stuffus) */}
+        <div style={{ display: "flex", alignItems: "center", gap: "0.35rem", marginBottom: "0.75rem" }}>
+          <span style={{ color: "#fbbf24", fontSize: "0.875rem" }}>★★★★★</span>
+          <span style={{ fontSize: "0.75rem", color: "var(--text-muted)", fontWeight: 500 }}>
+            5.0 (24)
           </span>
-        )}
-      </div>
+        </div>
 
-      {/* Preço e Botão */}
-      <div
-        style={{
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "space-between",
-          gap: "0.5rem",
-        }}
-      >
-        <div>
+        {/* Bloco de Preço */}
+        <div style={{ marginTop: "auto", paddingTop: "0.5rem" }}>
           {hasPromo && formattedBasePrice && (
             <span
               style={{
-                fontFamily: "var(--font-mono)",
                 fontSize: "0.75rem",
                 color: "var(--text-muted)",
                 textDecoration: "line-through",
                 display: "block",
+                lineHeight: 1,
               }}
             >
               {formattedBasePrice}
             </span>
           )}
-          <span
+
+          <div
             style={{
-              fontFamily: "var(--font-mono)",
-              fontSize: "1.125rem",
-              fontWeight: 700,
+              fontSize: "1.375rem",
+              fontWeight: 800,
               color: "var(--text-primary)",
+              lineHeight: 1.15,
             }}
           >
             {formattedPrice}
+          </div>
+
+          <span style={{ fontSize: "0.75rem", color: "var(--mode-in-stock)", display: "block", marginTop: "0.2rem" }}>
+            em até 3x de R$ {installmentValue} sem juros
           </span>
         </div>
 
-        <Link
-          href={`/produtos/${product.slug}`}
-          className="btn btn-bracket"
-          style={{
-            fontSize: "0.75rem",
-            padding: "0.5rem 0.875rem",
-            whiteSpace: "nowrap",
-          }}
-        >
-          DETALHES // VER
-        </Link>
+        {/* Botão de Ação */}
+        <div style={{ marginTop: "0.875rem" }}>
+          <Link
+            href={`/produtos/${product.slug}`}
+            className="btn btn-primary"
+            style={{
+              width: "100%",
+              padding: "0.55rem 1rem",
+              fontSize: "0.8125rem",
+              fontWeight: 700,
+              textTransform: "none",
+            }}
+          >
+            Comprar Agora
+          </Link>
+        </div>
       </div>
-    </Card>
+    </div>
   );
 };

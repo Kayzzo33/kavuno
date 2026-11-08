@@ -23,27 +23,28 @@ export const InterestLeadForm: React.FC<InterestLeadFormProps> = ({
   const [state, formAction, isPending] = useActionState(submitInterestLeadAction, null);
 
   return (
-    <Card variant="bracket" style={{ marginTop: "var(--spacing-xl)" }}>
+    <Card style={{ marginTop: "var(--spacing-xl)", borderRadius: "var(--radius-lg)", border: "1px solid var(--border-medium)" }}>
       <div style={{ marginBottom: "var(--spacing-md)" }}>
         <div
           style={{
-            fontFamily: "var(--font-mono)",
-            fontSize: "0.75rem",
+            fontSize: "0.8125rem",
+            fontWeight: 700,
             color: "var(--mode-interest)",
             marginBottom: "0.25rem",
+            textTransform: "uppercase",
+            letterSpacing: "0.04em",
           }}
         >
-          // VALIDAÇÃO DE MERCADO // 100% GRATUITO
+          Reserva Sob Encomenda &bull; Sem Cobrança Imediata
         </div>
         <h3
           style={{
-            fontFamily: "var(--font-mono)",
             fontSize: "1.25rem",
-            fontWeight: 700,
+            fontWeight: 800,
             color: "var(--text-primary)",
           }}
         >
-          GARANTA SUA RESERVA DE INTERESSE
+          Reserve este modelo para o próximo lote
         </h3>
         <p
           style={{
@@ -53,7 +54,7 @@ export const InterestLeadForm: React.FC<InterestLeadFormProps> = ({
             lineHeight: 1.5,
           }}
         >
-          Esta peça está em fase de validação de demanda. Ao manifestar seu interesse, você não paga nada agora e ganha prioridade e desconto exclusivo quando o lote for liberado para produção.
+          Este modelo é fabricado sob demanda. Registre seu interesse para garantir prioridade e ser avisado assim que a produção do lote iniciar.
         </p>
       </div>
 
@@ -116,9 +117,9 @@ export const InterestLeadForm: React.FC<InterestLeadFormProps> = ({
               variant="primary"
               size="lg"
               isLoading={isPending}
-              style={{ width: "100%" }}
+              style={{ width: "100%", borderRadius: "var(--radius-md)" }}
             >
-              MANIFESTAR INTERESSE [SEM CUSTO]
+              Confirmar Reserva Gratuita
             </Button>
           </div>
 

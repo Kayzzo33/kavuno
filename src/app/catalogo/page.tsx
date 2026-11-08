@@ -10,9 +10,9 @@ import type { CommercialMode } from "@/types/database.types";
 export const dynamic = "force-dynamic";
 
 export const metadata: Metadata = {
-  title: "Catálogo de Produtos | 3D Commerce",
+  title: "Catálogo de Produtos | KAVUNO 3D",
   description:
-    "Explore produtos e peças técnicas impressas em 3D. Pronta entrega, pré-vendas exclusivas e validação de projetos sob demanda.",
+    "Explore action figures, suportes de setup e peças mecânicas impressas em 3D de alta precisão. Pronta entrega com envio rápido.",
 };
 
 interface CatalogPageProps {
@@ -39,7 +39,7 @@ export default async function CatalogPage({ searchParams }: CatalogPageProps) {
       commercialMode,
       sort,
       page,
-      limit: 12,
+      limit: 16,
     }),
     getActiveCategories(),
   ]);
@@ -50,23 +50,19 @@ export default async function CatalogPage({ searchParams }: CatalogPageProps) {
     <div style={{ paddingTop: "var(--spacing-xl)", paddingBottom: "var(--spacing-2xl)" }}>
       <div className="container">
         {/* Cabeçalho do Catálogo */}
-        <div style={{ marginBottom: "var(--spacing-lg)" }}>
-          <div
-            style={{
-              fontFamily: "var(--font-mono)",
-              fontSize: "0.75rem",
-              color: "var(--color-primary)",
-              marginBottom: "0.25rem",
-            }}
-          >
-            // CATÁLOGO // PRODUTOS & MANUFATURA ADITIVA
+        <div style={{ marginBottom: "var(--spacing-xl)" }}>
+          <div style={{ display: "flex", alignItems: "center", gap: "0.5rem", fontSize: "0.8125rem", color: "var(--text-muted)", marginBottom: "0.5rem" }}>
+            <Link href="/" style={{ color: "var(--text-secondary)" }}>Início</Link>
+            <span>/</span>
+            <span style={{ color: "var(--color-primary)", fontWeight: 600 }}>Catálogo</span>
           </div>
-          <h1 style={{ fontFamily: "var(--font-mono)", fontSize: "2rem", fontWeight: 700 }}>
-            CATÁLOGO DE PRODUTOS
+
+          <h1 style={{ fontSize: "2rem", fontWeight: 900, color: "var(--text-primary)", letterSpacing: "-0.02em" }}>
+            Produtos & Impressão 3D
           </h1>
-          <div style={{ fontSize: "0.875rem", color: "var(--text-secondary)", marginTop: "0.25rem" }}>
-            {total === 0 ? "Nenhum produto encontrado" : `${total} produto(s) disponível(is)`}
-          </div>
+          <p style={{ fontSize: "0.9375rem", color: "var(--text-secondary)", marginTop: "0.25rem" }}>
+            {total === 0 ? "Nenhum produto encontrado" : `Exibindo ${total} produto(s) disponível(is)`}
+          </p>
         </div>
 
         {/* Filtros e Barra de Pesquisa */}
@@ -84,30 +80,30 @@ export default async function CatalogPage({ searchParams }: CatalogPageProps) {
         {products.length === 0 ? (
           <div
             style={{
-              padding: "var(--spacing-2xl)",
+              padding: "4rem 2rem",
               textAlign: "center",
               backgroundColor: "var(--bg-surface)",
-              border: "1px dashed var(--border-subtle)",
-              borderRadius: "var(--radius-sm)",
-              fontFamily: "var(--font-mono)",
+              border: "1px solid var(--border-subtle)",
+              borderRadius: "var(--radius-lg)",
             }}
           >
-            <div style={{ fontSize: "1.25rem", fontWeight: 700, color: "var(--text-primary)", marginBottom: "0.5rem" }}>
-              [ NENHUM PRODUTO ENCONTRADO ]
-            </div>
-            <p style={{ fontSize: "0.875rem", color: "var(--text-secondary)", maxWidth: "480px", margin: "0 auto 1.5rem" }}>
-              Nenhum modelo cadastrado corresponde aos critérios ou filtros selecionados. Novos lotes e produtos são adicionados continuamente.
+            <div style={{ fontSize: "3rem", marginBottom: "1rem" }}>🔍</div>
+            <h2 style={{ fontSize: "1.25rem", fontWeight: 700, color: "var(--text-primary)", marginBottom: "0.5rem" }}>
+              Nenhum produto encontrado
+            </h2>
+            <p style={{ fontSize: "0.9375rem", color: "var(--text-secondary)", maxWidth: "440px", margin: "0 auto 1.5rem" }}>
+              Tente buscar por termos mais genéricos ou limpe os filtros para ver todas as peças disponíveis.
             </p>
-            <Link href="/catalogo" className="btn btn-bracket">
-              LIMPAR FILTROS // VER TODOS
+            <Link href="/catalogo" className="btn btn-primary" style={{ padding: "0.65rem 1.5rem" }}>
+              Ver Todos os Produtos
             </Link>
           </div>
         ) : (
           <div
             style={{
               display: "grid",
-              gridTemplateColumns: "repeat(auto-fill, minmax(280px, 1fr))",
-              gap: "var(--spacing-lg)",
+              gridTemplateColumns: "repeat(auto-fill, minmax(260px, 1fr))",
+              gap: "1.5rem",
             }}
           >
             {products.map((product) => (
@@ -125,39 +121,38 @@ export default async function CatalogPage({ searchParams }: CatalogPageProps) {
               alignItems: "center",
               gap: "1rem",
               marginTop: "var(--spacing-2xl)",
-              fontFamily: "var(--font-mono)",
-              fontSize: "0.8125rem",
+              fontSize: "0.875rem",
             }}
           >
             {page > 1 ? (
               <Link
                 href={`/catalogo?pagina=${page - 1}`}
-                className="btn btn-bracket"
-                style={{ fontSize: "0.75rem", padding: "0.4rem 0.8rem" }}
+                className="btn btn-secondary"
+                style={{ fontSize: "0.8125rem", padding: "0.5rem 1rem" }}
               >
-                &larr; ANTERIOR
+                &larr; Anterior
               </Link>
             ) : (
-              <span className="btn btn-bracket" style={{ opacity: 0.4, cursor: "not-allowed", fontSize: "0.75rem", padding: "0.4rem 0.8rem" }}>
-                &larr; ANTERIOR
+              <span className="btn btn-secondary" style={{ opacity: 0.4, cursor: "not-allowed", fontSize: "0.8125rem", padding: "0.5rem 1rem" }}>
+                &larr; Anterior
               </span>
             )}
 
             <span style={{ color: "var(--text-secondary)" }}>
-              PÁGINA <strong style={{ color: "var(--text-primary)" }}>{page}</strong> DE <strong style={{ color: "var(--text-primary)" }}>{totalPages}</strong>
+              Página <strong style={{ color: "var(--text-primary)" }}>{page}</strong> de <strong style={{ color: "var(--text-primary)" }}>{totalPages}</strong>
             </span>
 
             {page < totalPages ? (
               <Link
                 href={`/catalogo?pagina=${page + 1}`}
-                className="btn btn-bracket"
-                style={{ fontSize: "0.75rem", padding: "0.4rem 0.8rem" }}
+                className="btn btn-secondary"
+                style={{ fontSize: "0.8125rem", padding: "0.5rem 1rem" }}
               >
-                PRÓXIMA &rarr;
+                Próxima &rarr;
               </Link>
             ) : (
-              <span className="btn btn-bracket" style={{ opacity: 0.4, cursor: "not-allowed", fontSize: "0.75rem", padding: "0.4rem 0.8rem" }}>
-                PRÓXIMA &rarr;
+              <span className="btn btn-secondary" style={{ opacity: 0.4, cursor: "not-allowed", fontSize: "0.8125rem", padding: "0.5rem 1rem" }}>
+                Próxima &rarr;
               </span>
             )}
           </div>

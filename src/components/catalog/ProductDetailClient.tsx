@@ -22,6 +22,7 @@ export const ProductDetailClient: React.FC<ProductDetailClientProps> = ({
   const [selectedVariant, setSelectedVariant] = useState<ProductVariantRow | null>(
     product.variants?.[0] || null
   );
+  const [addedMessage, setAddedMessage] = useState<string | null>(null);
 
   // Rastreia visualização do produto de forma anônima e conforme LGPD
   useEffect(() => {
@@ -52,6 +53,8 @@ export const ProductDetailClient: React.FC<ProductDetailClientProps> = ({
         currency: "BRL",
       }).format(basePriceWithVariant)
     : null;
+
+  const installmentValue = (finalPrice / 3).toFixed(2).replace(".", ",");
 
   return (
     <div>
@@ -151,6 +154,39 @@ export const ProductDetailClient: React.FC<ProductDetailClientProps> = ({
       />
 
       {/* Ações Específicas por Modalidade Comercial */}
+      {addedMessage && (
+        <div
+          style={{
+            padding: "0.875rem 1rem",
+            backgroundColor: "rgba(16, 185, 129, 0.15)",
+            border: "1px solid var(--mode-in-stock)",
+            borderRadius: "var(--radius-md)",
+            marginBottom: "1rem",
+            display: "flex",
+            justifyContent: "space-between",
+            alignItems: "center",
+          }}
+        >
+          <span style={{ fontSize: "0.875rem", color: "var(--mode-in-stock)", fontWeight: 600 }}>
+            ✓ {addedMessage}
+          </span>
+          <a
+            href="/carrinho"
+            style={{
+              fontSize: "0.8125rem",
+              fontWeight: 700,
+              color: "#ffffff",
+              backgroundColor: "var(--mode-in-stock)",
+              padding: "0.35rem 0.75rem",
+              borderRadius: "var(--radius-sm)",
+              textDecoration: "none",
+            }}
+          >
+            Ir para o Carrinho &rarr;
+          </a>
+        </div>
+      )}
+
       {product.commercial_mode === "in_stock" && (
         <div style={{ marginBottom: "var(--spacing-lg)" }}>
           <div
@@ -158,28 +194,27 @@ export const ProductDetailClient: React.FC<ProductDetailClientProps> = ({
               padding: "var(--spacing-md)",
               backgroundColor: "var(--mode-in-stock-subtle)",
               border: "1px solid var(--mode-in-stock-border)",
-              borderRadius: "var(--radius-sm)",
-              fontFamily: "var(--font-mono)",
+              borderRadius: "var(--radius-md)",
               fontSize: "0.875rem",
               color: "var(--mode-in-stock)",
               marginBottom: "var(--spacing-md)",
             }}
           >
             <div style={{ fontWeight: 700, marginBottom: "0.25rem" }}>
-              ✓ ITEM DISPONÍVEL EM ESTOQUE FÍSICO
+              ⚡ ITEM DISPONÍVEL A PRONTA ENTREGA
             </div>
             <div style={{ fontSize: "0.8125rem", color: "var(--text-secondary)" }}>
-              Peça acabada com despacho prioritário em até 1 dia útil após a confirmação.
+              Peça pronta no estoque físico. Despacho ágil com código de rastreamento.
             </div>
           </div>
 
           <button
             type="button"
             className="btn btn-primary"
-            style={{ width: "100%", padding: "0.875rem", fontSize: "1rem" }}
+            style={{ width: "100%", padding: "0.875rem", fontSize: "1rem", borderRadius: "var(--radius-md)" }}
             onClick={() => {
               if (!selectedVariant) {
-                alert("Selecione uma variante antes de adicionar ao carrinho.");
+                alert("Selecione uma opção de cor ou material.");
                 return;
               }
               addItem({
@@ -195,10 +230,10 @@ export const ProductDetailClient: React.FC<ProductDetailClientProps> = ({
                 commercialMode: "in_stock",
                 quantity: 1,
               });
-              alert(`"${product.name}" adicionado ao carrinho!`);
+              setAddedMessage(`"${product.name}" adicionado ao carrinho!`);
             }}
           >
-            🛒 ADICIONAR AO CARRINHO
+            🛒 Adicionar ao Carrinho
           </button>
         </div>
       )}
@@ -210,8 +245,7 @@ export const ProductDetailClient: React.FC<ProductDetailClientProps> = ({
               padding: "var(--spacing-md)",
               backgroundColor: "var(--mode-pre-order-subtle)",
               border: "1px solid var(--mode-pre-order-border)",
-              borderRadius: "var(--radius-sm)",
-              fontFamily: "var(--font-mono)",
+              borderRadius: "var(--radius-md)",
               fontSize: "0.875rem",
               color: "var(--mode-pre-order)",
               marginBottom: "var(--spacing-md)",
@@ -223,18 +257,17 @@ export const ProductDetailClient: React.FC<ProductDetailClientProps> = ({
             <div style={{ fontSize: "0.8125rem", color: "var(--text-secondary)", lineHeight: 1.5 }}>
               {product.campaign?.estimated_production_days
                 ? `Prazo de produção estimado: ${product.campaign.estimated_production_days} dias úteis.`
-                : "Prazo de produção informado no pedido."}
-              {" "}Meta do lote: {product.campaign?.target_min_units || 0} unidades.
+                : "Produzido especialmente para você sob demanda."}
             </div>
           </div>
 
           <button
             type="button"
             className="btn btn-primary"
-            style={{ width: "100%", padding: "0.875rem", fontSize: "1rem" }}
+            style={{ width: "100%", padding: "0.875rem", fontSize: "1rem", borderRadius: "var(--radius-md)" }}
             onClick={() => {
               if (!selectedVariant) {
-                alert("Selecione uma variante antes de participar da pré-venda.");
+                alert("Selecione uma opção de cor ou material.");
                 return;
               }
               addItem({
@@ -250,10 +283,10 @@ export const ProductDetailClient: React.FC<ProductDetailClientProps> = ({
                 commercialMode: "pre_order",
                 quantity: 1,
               });
-              alert(`"${product.name}" (Pré-venda) adicionado ao carrinho!`);
+              setAddedMessage(`"${product.name}" adicionado ao carrinho!`);
             }}
           >
-            ⚡ COMPRAR EM PRÉ-VENDA
+            ⚡ Comprar em Pré-Venda
           </button>
         </div>
       )}
