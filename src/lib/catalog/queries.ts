@@ -180,3 +180,63 @@ export async function getActiveCampaigns() {
   }
   return data as (Database["public"]["Tables"]["campaigns"]["Row"] & { products: { count: number }[] })[];
 }
+
+export interface SiteBannerItem {
+  id: string;
+  title: string;
+  subtitle: string | null;
+  tag: string | null;
+  image_url: string;
+  link_url: string | null;
+  button_text: string | null;
+  display_order: number;
+  is_active: boolean;
+}
+
+export interface SiteSettingsData {
+  hero_mode: "hot_products" | "banner";
+  announcement_text: string;
+}
+
+export async function getActiveSiteBanners(): Promise<SiteBannerItem[]> {
+  try {
+    const supabase = await createClient();
+    const { data, error } = await (supabase.from("site_banners") as any)
+      .select("*")
+      .eq("is_active", true)
+      .order("display_order", { ascending: true });
+
+    if (error) return [];
+    return data || [];
+  } catch {
+    return [];
+  }
+}
+
+export async function getSiteSettings(): Promise<SiteSettingsData> {
+  const defaultSettings: SiteSettingsData = {
+    hero_mode: "hot_products",
+    announcement_text: "🚚 Frete Grátis para todo Brasil acima de R$ 199 • 🛡️ Garantia de Acabamento 3D • ⚡ Despacho Rápido",
+  };
+
+  try {
+    const supabase = await createClient();
+    const { data, error } = await (supabase.from("site_settings") as any)
+      .select("key, value");
+
+    if (error || !data) return defaultSettings;
+
+    const result = { ...defaultSettings };
+    for (const item of data) {
+      if (item.key === "hero_mode" && (item.value === "hot_products" || item.value === "banner")) {
+        result.hero_mode = item.value;
+      }
+      if (item.key === "announcement_text" && typeof item.value === "string") {
+        result.announcement_text = item.value;
+      }
+    }
+    return result;
+  } catch {
+    return defaultSettings;
+  }
+}

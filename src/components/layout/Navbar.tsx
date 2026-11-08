@@ -5,12 +5,15 @@ import { createClient } from "@/lib/supabase/server";
 import { signOutAction } from "@/app/auth/actions";
 import { CartNavbarButton } from "@/components/layout/CartNavbarButton";
 import { NavbarSearch } from "@/components/layout/NavbarSearch";
+import { getSiteSettings } from "@/lib/catalog/queries";
 
 export const Navbar = async () => {
   let userName: string | null = null;
   let userEmail: string | null = null;
   let isAuthenticated = false;
   let isAdmin = false;
+
+  const settings = await getSiteSettings();
 
   try {
     const supabase = await createClient();
@@ -37,11 +40,9 @@ export const Navbar = async () => {
 
   return (
     <>
-      {/* Top Announcement Bar (Estilo ViVA / Mercado Livre) */}
+      {/* Top Announcement Bar (Configurável via Admin) */}
       <div className="announcement-bar">
-        <span>
-          🚚 <strong>Frete Grátis</strong> para todo Brasil acima de R$ 199 &bull; 🛡️ Garantia de Acabamento 3D &bull; ⚡ Despacho Rápido
-        </span>
+        <span>{settings.announcement_text}</span>
       </div>
 
       <header
@@ -77,39 +78,18 @@ export const Navbar = async () => {
               flexShrink: 0,
             }}
           >
-            <img
+            <Image
               src="/logo.png"
               alt="KAVUNO Logo"
+              width={160}
+              height={36}
               style={{
-                width: "36px",
                 height: "36px",
+                width: "auto",
                 objectFit: "contain",
               }}
+              priority
             />
-            <div style={{ display: "flex", flexDirection: "column" }}>
-              <span
-                style={{
-                  fontWeight: 900,
-                  fontSize: "1.35rem",
-                  letterSpacing: "0.02em",
-                  color: "var(--text-primary)",
-                  lineHeight: 1,
-                }}
-              >
-                KAVUNO
-              </span>
-              <span
-                style={{
-                  fontSize: "0.625rem",
-                  fontWeight: 700,
-                  color: "var(--color-primary)",
-                  letterSpacing: "0.1em",
-                  textTransform: "uppercase",
-                }}
-              >
-                3D STORE
-              </span>
-            </div>
           </Link>
 
           {/* Barra de Pesquisa Centralizada (Estilo Mercado Livre / TechBazaar) */}

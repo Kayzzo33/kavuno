@@ -1,370 +1,476 @@
 import React from "react";
 import Link from "next/link";
-import { getCatalogProducts, getActiveCategories } from "@/lib/catalog/queries";
+import Image from "next/image";
+import { getCatalogProducts, getActiveCategories, getSiteSettings, getActiveSiteBanners } from "@/lib/catalog/queries";
 import { ProductCard } from "@/components/catalog/ProductCard";
 
 export const dynamic = "force-dynamic";
 
-// Vitrine de demonstração de alta qualidade para caso o banco de dados ainda não possua itens inseridos
-const SHOWCASE_FALLBACK_PRODUCTS = [
-  {
-    id: "demo-1",
-    category_id: "cat-1",
-    campaign_id: null,
-    name: "Suporte Articulado Gamer 2 em 1 para Fone e Controle",
-    slug: "suporte-articulado-gamer-2-em-1",
-    short_description: "Suporte modular impresso em 3D de alta resistência com canaletas para cabos e preenchimento reforçado.",
-    full_description: "Projetado para organizar seu setup gamer com praticidade e elegância.",
-    commercial_mode: "in_stock" as const,
-    base_price: 89.9,
-    promotional_price: 74.9,
-    is_active: true,
-    is_featured: true,
-    meta_title: null,
-    meta_description: null,
-    created_at: new Date().toISOString(),
-    updated_at: new Date().toISOString(),
-    category: {
-      id: "cat-1",
-      name: "Setup & Produtividade",
-      slug: "setup-produtividade",
-      description: null,
-      display_order: 1,
-      is_active: true,
-      created_at: "",
-      updated_at: "",
-    },
-    variants: [],
-    images: [],
-  },
-  {
-    id: "demo-2",
-    category_id: "cat-2",
-    campaign_id: null,
-    name: "Action Figure Busto Cyberpunk Samurái 18cm",
-    slug: "busto-cyberpunk-samurai-18cm",
-    short_description: "Colecionável detalhado com camadas finas de 0.12mm e acabamento fosco suave.",
-    full_description: "Impressão de altíssima definição para colecionadores e fãs da cultura geek.",
-    commercial_mode: "in_stock" as const,
-    base_price: 159.9,
-    promotional_price: 139.9,
-    is_active: true,
-    is_featured: true,
-    meta_title: null,
-    meta_description: null,
-    created_at: new Date().toISOString(),
-    updated_at: new Date().toISOString(),
-    category: {
-      id: "cat-2",
-      name: "Action Figures & Geek",
-      slug: "decoracao-design",
-      description: null,
-      display_order: 2,
-      is_active: true,
-      created_at: "",
-      updated_at: "",
-    },
-    variants: [],
-    images: [],
-  },
-  {
-    id: "demo-3",
-    category_id: "cat-1",
-    campaign_id: null,
-    name: "Organizador Modular Magnético de Cabos para Desk",
-    slug: "organizador-modular-cabos-desk",
-    short_description: "Kit com 4 módulos magnéticos para fixação rápida na borda da mesa.",
-    full_description: "Nunca mais perca seus cabos de vista com essa solução modular em 3D.",
-    commercial_mode: "in_stock" as const,
-    base_price: 54.9,
-    promotional_price: 44.9,
-    is_active: true,
-    is_featured: true,
-    meta_title: null,
-    meta_description: null,
-    created_at: new Date().toISOString(),
-    updated_at: new Date().toISOString(),
-    category: {
-      id: "cat-1",
-      name: "Setup & Produtividade",
-      slug: "setup-produtividade",
-      description: null,
-      display_order: 1,
-      is_active: true,
-      created_at: "",
-      updated_at: "",
-    },
-    variants: [],
-    images: [],
-  },
-  {
-    id: "demo-4",
-    category_id: "cat-3",
-    campaign_id: null,
-    name: "Miniatura Dragão Ancião RPG de Mesa 120mm",
-    slug: "miniatura-dragao-anciao-rpg",
-    short_description: "Miniatura épica para mestres e jogadores de RPG com riqueza em escamas e asas.",
-    full_description: "Alta densidade e resistente a quedas de mesa de jogo.",
-    commercial_mode: "pre_order" as const,
-    base_price: 79.9,
-    promotional_price: null,
-    is_active: true,
-    is_featured: true,
-    meta_title: null,
-    meta_description: null,
-    created_at: new Date().toISOString(),
-    updated_at: new Date().toISOString(),
-    category: {
-      id: "cat-3",
-      name: "Miniaturas & RPG",
-      slug: "miniaturas-rpg",
-      description: null,
-      display_order: 3,
-      is_active: true,
-      created_at: "",
-      updated_at: "",
-    },
-    variants: [],
-    images: [],
-  },
-];
-
 export default async function HomePage() {
-  const [catalogData, categories] = await Promise.all([
-    getCatalogProducts({ limit: 8, sort: "newest" }),
+  const [catalogData, categories, settings, banners] = await Promise.all([
+    getCatalogProducts({ limit: 12, sort: "newest" }),
     getActiveCategories(),
+    getSiteSettings(),
+    getActiveSiteBanners(),
   ]);
 
   const { products } = catalogData;
-  const displayProducts = products.length > 0 ? products : SHOWCASE_FALLBACK_PRODUCTS;
+  const isBannerMode = settings.hero_mode === "banner" && banners.length > 0;
+  const activeBanner = banners[0];
+
+  // Identifica o produto em destaque principal para o Hero (estilo imagem 3 / Hypeclt)
+  const hotProduct = products.find((p) => p.is_featured) || products[0] || null;
+  const secondaryHotProducts = products.filter((p) => p.id !== hotProduct?.id).slice(0, 4);
 
   return (
     <div style={{ paddingBottom: "var(--spacing-2xl)" }}>
-      {/* 1. Hero Promo Banner (Estilo TechBazaar / ViVA / Shopee) */}
-      <section style={{ backgroundColor: "#0c0f14", borderBottom: "1px solid var(--border-subtle)" }}>
-        <div className="container" style={{ paddingTop: "2.5rem", paddingBottom: "2.5rem" }}>
-          <div
-            style={{
-              display: "grid",
-              gridTemplateColumns: "repeat(auto-fit, minmax(320px, 1fr))",
-              gap: "2.5rem",
-              alignItems: "center",
-              background: "radial-gradient(ellipse at 80% 30%, rgba(255, 92, 0, 0.15), transparent 70%), linear-gradient(135deg, #131722 0%, #0d1017 100%)",
-              border: "1px solid var(--border-medium)",
-              borderRadius: "var(--radius-xl)",
-              padding: "clamp(1.5rem, 4vw, 3rem)",
-              boxShadow: "var(--shadow-lg)",
-            }}
-          >
-            <div>
-              <div
-                style={{
-                  display: "inline-flex",
-                  alignItems: "center",
-                  gap: "0.5rem",
-                  padding: "0.3rem 0.8rem",
-                  borderRadius: "var(--radius-full)",
-                  backgroundColor: "rgba(255, 92, 0, 0.15)",
-                  border: "1px solid rgba(255, 92, 0, 0.3)",
-                  color: "var(--color-primary)",
-                  fontSize: "0.8125rem",
-                  fontWeight: 700,
-                  marginBottom: "1rem",
-                }}
-              >
-                <span>⚡</span> MANUFATURA ADITIVA DE ALTA PRECISÃO
-              </div>
-
-              <h1
-                style={{
-                  fontSize: "clamp(2rem, 4.5vw, 3.25rem)",
-                  fontWeight: 900,
-                  letterSpacing: "-0.03em",
-                  lineHeight: 1.15,
-                  color: "var(--text-primary)",
-                  marginBottom: "1rem",
-                }}
-              >
-                Colecionáveis Geek & Peças 3D sob Demanda.
-              </h1>
-
-              <p
-                style={{
-                  fontSize: "1.0625rem",
-                  color: "var(--text-secondary)",
-                  lineHeight: 1.6,
-                  marginBottom: "1.75rem",
-                  maxWidth: "540px",
-                }}
-              >
-                Action figures, miniaturas épicas e organizadores de setup impressos em filamentos de alta resistência (PLA+, PETG, Resina) com acabamento profissional.
-              </p>
-
-              <div style={{ display: "flex", flexWrap: "wrap", gap: "1rem" }}>
-                <Link href="/catalogo" className="btn btn-primary" style={{ padding: "0.85rem 1.75rem", fontSize: "1rem", borderRadius: "var(--radius-md)" }}>
-                  Explorar Loja Completa &rarr;
-                </Link>
-                <Link
-                  href="/catalogo?modalidade=in_stock"
-                  className="btn btn-secondary"
-                  style={{ padding: "0.85rem 1.5rem", fontSize: "1rem", borderRadius: "var(--radius-md)" }}
-                >
-                  ⚡ Pronta Entrega
-                </Link>
-              </div>
-            </div>
-
-            {/* Visual Destaque 3D */}
+      {/* 1. HERO SECTION: DINÂMICA (PRODUTOS HOT ESTILO IMAGEM 3 OU BANNER GRÁFICO REAL) */}
+      {isBannerMode && activeBanner ? (
+        // MODO BANNER GRÁFICO REAL
+        <section style={{ backgroundColor: "#090c10", borderBottom: "1px solid var(--border-subtle)" }}>
+          <div className="container" style={{ paddingTop: "2rem", paddingBottom: "2rem" }}>
             <div
               style={{
-                display: "flex",
-                flexDirection: "column",
-                gap: "1rem",
-                background: "rgba(18, 22, 30, 0.7)",
+                position: "relative",
+                width: "100%",
+                minHeight: "440px",
+                borderRadius: "var(--radius-xl)",
+                overflow: "hidden",
                 border: "1px solid var(--border-medium)",
-                borderRadius: "var(--radius-lg)",
-                padding: "1.5rem",
-                backdropFilter: "blur(10px)",
+                display: "flex",
+                alignItems: "flex-end",
+                padding: "clamp(2rem, 5vw, 3.5rem)",
+                boxShadow: "var(--shadow-lg)",
+                backgroundColor: "#0d1017",
               }}
             >
-              <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", borderBottom: "1px solid var(--border-subtle)", paddingBottom: "0.75rem" }}>
-                <span style={{ fontWeight: 700, fontSize: "0.9375rem", color: "var(--text-primary)" }}>
-                  Destaques da Oficina 3D
-                </span>
-                <span style={{ fontSize: "0.75rem", color: "var(--mode-in-stock)", fontWeight: 700 }}>
-                  ● EM OPERAÇÃO
-                </span>
+              <img
+                src={activeBanner.image_url}
+                alt={activeBanner.title}
+                style={{
+                  position: "absolute",
+                  inset: 0,
+                  width: "100%",
+                  height: "100%",
+                  objectFit: "cover",
+                }}
+              />
+              <div
+                style={{
+                  position: "absolute",
+                  inset: 0,
+                  background: "linear-gradient(to top, rgba(9, 11, 15, 0.95) 0%, rgba(9, 11, 15, 0.4) 60%, transparent 100%)",
+                }}
+              />
+
+              <div style={{ position: "relative", zIndex: 2, maxWidth: "600px" }}>
+                {activeBanner.tag && (
+                  <span
+                    style={{
+                      display: "inline-block",
+                      fontSize: "0.75rem",
+                      fontWeight: 800,
+                      letterSpacing: "0.15em",
+                      textTransform: "uppercase",
+                      color: "var(--color-primary)",
+                      backgroundColor: "rgba(255, 92, 0, 0.15)",
+                      border: "1px solid var(--color-primary)",
+                      padding: "0.3rem 0.8rem",
+                      borderRadius: "var(--radius-full)",
+                      marginBottom: "0.85rem",
+                    }}
+                  >
+                    {activeBanner.tag}
+                  </span>
+                )}
+                <h1
+                  style={{
+                    fontSize: "clamp(2rem, 4vw, 3.25rem)",
+                    fontWeight: 900,
+                    lineHeight: 1.1,
+                    letterSpacing: "-0.03em",
+                    color: "#ffffff",
+                    marginBottom: "0.75rem",
+                  }}
+                >
+                  {activeBanner.title}
+                </h1>
+                {activeBanner.subtitle && (
+                  <p style={{ fontSize: "1.0625rem", color: "var(--text-secondary)", marginBottom: "1.5rem", lineHeight: 1.5 }}>
+                    {activeBanner.subtitle}
+                  </p>
+                )}
+                {activeBanner.link_url && (
+                  <Link
+                    href={activeBanner.link_url}
+                    className="btn btn-primary"
+                    style={{
+                      padding: "0.85rem 2rem",
+                      fontSize: "0.9375rem",
+                      fontWeight: 700,
+                      borderRadius: "var(--radius-full)",
+                    }}
+                  >
+                    {activeBanner.button_text || "Conferir Agora &rarr;"}
+                  </Link>
+                )}
+              </div>
+            </div>
+          </div>
+        </section>
+      ) : hotProduct ? (
+        // MODO PRODUTOS HOT / MAIS VENDIDOS (INSPIRADO NA IMAGEM 3 - HYPECLT & TECH STREETWEAR)
+        <section
+          style={{
+            backgroundColor: "#0d1016",
+            borderBottom: "1px solid var(--border-subtle)",
+            background: "radial-gradient(ellipse at 80% 40%, rgba(255, 92, 0, 0.12), transparent 60%), #0d1016",
+          }}
+        >
+          <div className="container" style={{ paddingTop: "2.5rem", paddingBottom: "2.5rem" }}>
+            <div
+              style={{
+                display: "grid",
+                gridTemplateColumns: "repeat(auto-fit, minmax(320px, 1fr))",
+                gap: "2.5rem",
+                alignItems: "center",
+              }}
+            >
+              {/* Lado Esquerdo: Tipografia e Chamada Hot */}
+              <div>
+                <div
+                  style={{
+                    display: "inline-flex",
+                    alignItems: "center",
+                    gap: "0.5rem",
+                    padding: "0.35rem 0.85rem",
+                    borderRadius: "var(--radius-full)",
+                    backgroundColor: "rgba(255, 92, 0, 0.15)",
+                    border: "1px solid var(--color-primary)",
+                    color: "var(--color-primary)",
+                    fontSize: "0.75rem",
+                    fontWeight: 800,
+                    letterSpacing: "0.1em",
+                    textTransform: "uppercase",
+                    marginBottom: "1.25rem",
+                  }}
+                >
+                  🔥 PRODUTO EM DESTAQUE // HOT DROP
+                </div>
+
+                <h1
+                  style={{
+                    fontSize: "clamp(2.25rem, 4.5vw, 3.5rem)",
+                    fontWeight: 900,
+                    lineHeight: 1.1,
+                    letterSpacing: "-0.03em",
+                    color: "#ffffff",
+                    marginBottom: "1rem",
+                  }}
+                >
+                  {hotProduct.name}
+                </h1>
+
+                <p
+                  style={{
+                    fontSize: "1.0625rem",
+                    color: "var(--text-secondary)",
+                    lineHeight: 1.6,
+                    marginBottom: "1.75rem",
+                    maxWidth: "520px",
+                  }}
+                >
+                  {hotProduct.short_description || "Manufatura aditiva de alta precisão com acabamento premium e preenchimento reforçado para máxima durabilidade."}
+                </p>
+
+                <div style={{ display: "flex", alignItems: "center", gap: "1.25rem", marginBottom: "2rem" }}>
+                  <div style={{ fontSize: "2rem", fontWeight: 900, color: "var(--color-primary)" }}>
+                    {new Intl.NumberFormat("pt-BR", { style: "currency", currency: "BRL" }).format(
+                      hotProduct.promotional_price && hotProduct.promotional_price > 0
+                        ? hotProduct.promotional_price
+                        : hotProduct.base_price
+                    )}
+                  </div>
+                  <span style={{ fontSize: "0.875rem", color: "var(--mode-in-stock)", fontWeight: 700 }}>
+                    ⚡ {hotProduct.commercial_mode === "in_stock" ? "Pronta Entrega" : "Sob Encomenda"}
+                  </span>
+                </div>
+
+                <div style={{ display: "flex", flexWrap: "wrap", gap: "1rem" }}>
+                  <Link
+                    href={`/produtos/${hotProduct.slug}`}
+                    className="btn btn-primary"
+                    style={{
+                      padding: "0.85rem 2rem",
+                      fontSize: "1rem",
+                      borderRadius: "var(--radius-full)",
+                      fontWeight: 800,
+                    }}
+                  >
+                    Comprar Agora &rarr;
+                  </Link>
+                  <Link
+                    href="/catalogo"
+                    className="btn btn-secondary"
+                    style={{
+                      padding: "0.85rem 1.75rem",
+                      fontSize: "1rem",
+                      borderRadius: "var(--radius-full)",
+                    }}
+                  >
+                    Ver Todo o Catálogo
+                  </Link>
+                </div>
+
+                {/* Miniaturas de outros itens HOT (estilo imagem 3) */}
+                {secondaryHotProducts.length > 0 && (
+                  <div style={{ marginTop: "2.5rem", borderTop: "1px solid var(--border-subtle)", paddingTop: "1.5rem" }}>
+                    <div style={{ fontSize: "0.75rem", fontWeight: 700, color: "var(--text-muted)", textTransform: "uppercase", letterSpacing: "0.05em", marginBottom: "0.75rem" }}>
+                      Mais Modelos em Alta:
+                    </div>
+                    <div style={{ display: "flex", gap: "0.75rem", flexWrap: "wrap" }}>
+                      {secondaryHotProducts.map((p) => {
+                        const img = p.images?.[0]?.image_url;
+                        return (
+                          <Link
+                            key={p.id}
+                            href={`/produtos/${p.slug}`}
+                            title={p.name}
+                            style={{
+                              width: "56px",
+                              height: "56px",
+                              borderRadius: "var(--radius-md)",
+                              backgroundColor: "var(--bg-surface)",
+                              border: "1px solid var(--border-medium)",
+                              overflow: "hidden",
+                              display: "flex",
+                              alignItems: "center",
+                              justifyContent: "center",
+                              transition: "transform var(--transition-fast), border-color var(--transition-fast)",
+                            }}
+                          >
+                            {img ? (
+                              <img src={img} alt={p.name} style={{ width: "100%", height: "100%", objectFit: "cover" }} />
+                            ) : (
+                              <span style={{ fontSize: "1.25rem" }}>📦</span>
+                            )}
+                          </Link>
+                        );
+                      })}
+                    </div>
+                  </div>
+                )}
               </div>
 
-              <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "0.85rem" }}>
-                <div style={{ padding: "0.85rem", backgroundColor: "var(--bg-card)", borderRadius: "var(--radius-md)", border: "1px solid var(--border-subtle)" }}>
-                  <div style={{ fontSize: "1.25rem", marginBottom: "0.25rem" }}>🎯</div>
-                  <div style={{ fontSize: "0.75rem", color: "var(--text-muted)" }}>Resolução de Camada</div>
-                  <div style={{ fontSize: "0.9375rem", fontWeight: 700, color: "var(--text-primary)" }}>0.12mm a 0.20mm</div>
-                </div>
+              {/* Lado Direito: Card Flutuante com Efeito Glassmorphism (Estilo Imagem 3) */}
+              <div style={{ display: "flex", justifyContent: "center" }}>
+                <div
+                  style={{
+                    width: "100%",
+                    maxWidth: "460px",
+                    borderRadius: "var(--radius-xl)",
+                    backgroundColor: "rgba(20, 24, 33, 0.75)",
+                    backdropFilter: "blur(20px)",
+                    border: "1px solid rgba(255, 255, 255, 0.12)",
+                    padding: "1.5rem",
+                    boxShadow: "0 20px 40px rgba(0, 0, 0, 0.5), 0 0 30px rgba(255, 92, 0, 0.15)",
+                  }}
+                >
+                  <div
+                    style={{
+                      position: "relative",
+                      width: "100%",
+                      paddingTop: "100%",
+                      borderRadius: "var(--radius-lg)",
+                      backgroundColor: "#080a0e",
+                      overflow: "hidden",
+                      marginBottom: "1.25rem",
+                    }}
+                  >
+                    {hotProduct.images?.[0]?.image_url ? (
+                      <img
+                        src={hotProduct.images[0].image_url}
+                        alt={hotProduct.name}
+                        style={{
+                          position: "absolute",
+                          inset: 0,
+                          width: "100%",
+                          height: "100%",
+                          objectFit: "cover",
+                        }}
+                      />
+                    ) : (
+                      <div style={{ position: "absolute", inset: 0, display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", color: "var(--text-muted)" }}>
+                        <span style={{ fontSize: "3rem", marginBottom: "0.5rem" }}>🦾</span>
+                        <span style={{ fontSize: "0.8125rem", fontWeight: 600 }}>KAVUNO 3D STUDIO</span>
+                      </div>
+                    )}
+                  </div>
 
-                <div style={{ padding: "0.85rem", backgroundColor: "var(--bg-card)", borderRadius: "var(--radius-md)", border: "1px solid var(--border-subtle)" }}>
-                  <div style={{ fontSize: "1.25rem", marginBottom: "0.25rem" }}>🛡️</div>
-                  <div style={{ fontSize: "0.75rem", color: "var(--text-muted)" }}>Materiais Resistentes</div>
-                  <div style={{ fontSize: "0.9375rem", fontWeight: 700, color: "var(--text-primary)" }}>PLA+, PETG, Resina</div>
-                </div>
+                  <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: "0.75rem" }}>
+                    <div>
+                      <span style={{ fontSize: "0.6875rem", fontWeight: 700, color: "var(--color-primary)", textTransform: "uppercase" }}>
+                        {hotProduct.category?.name || "Impressão 3D"}
+                      </span>
+                      <h3 style={{ fontSize: "1.125rem", fontWeight: 800, color: "#fff", marginTop: "0.15rem" }}>
+                        {hotProduct.name}
+                      </h3>
+                    </div>
+                    <span style={{ fontSize: "1.25rem", fontWeight: 900, color: "var(--color-primary)" }}>
+                      {new Intl.NumberFormat("pt-BR", { style: "currency", currency: "BRL" }).format(
+                        hotProduct.promotional_price && hotProduct.promotional_price > 0
+                          ? hotProduct.promotional_price
+                          : hotProduct.base_price
+                      )}
+                    </span>
+                  </div>
 
-                <div style={{ padding: "0.85rem", backgroundColor: "var(--bg-card)", borderRadius: "var(--radius-md)", border: "1px solid var(--border-subtle)" }}>
-                  <div style={{ fontSize: "1.25rem", marginBottom: "0.25rem" }}>⚡</div>
-                  <div style={{ fontSize: "0.75rem", color: "var(--text-muted)" }}>Envio em Estoque</div>
-                  <div style={{ fontSize: "0.9375rem", fontWeight: 700, color: "var(--text-primary)" }}>Despacho em 24h</div>
-                </div>
-
-                <div style={{ padding: "0.85rem", backgroundColor: "var(--bg-card)", borderRadius: "var(--radius-md)", border: "1px solid var(--border-subtle)" }}>
-                  <div style={{ fontSize: "1.25rem", marginBottom: "0.25rem" }}>💳</div>
-                  <div style={{ fontSize: "0.75rem", color: "var(--text-muted)" }}>Pagamento Seguro</div>
-                  <div style={{ fontSize: "0.9375rem", fontWeight: 700, color: "var(--text-primary)" }}>PIX & Cartão em 12x</div>
+                  <Link
+                    href={`/produtos/${hotProduct.slug}`}
+                    className="btn btn-primary"
+                    style={{
+                      width: "100%",
+                      padding: "0.75rem",
+                      borderRadius: "var(--radius-md)",
+                      fontWeight: 700,
+                    }}
+                  >
+                    + Ver Detalhes & Adicionar
+                  </Link>
                 </div>
               </div>
             </div>
           </div>
-        </div>
-      </section>
+        </section>
+      ) : (
+        // ESTADO VAZIO LIMPO E ELEGANTE QUANDO NÃO HÁ PRODUTOS CADASTRADOS NO BANCO
+        <section style={{ backgroundColor: "#090c10", borderBottom: "1px solid var(--border-subtle)", padding: "4rem 0" }}>
+          <div className="container" style={{ textAlign: "center", maxWidth: "600px" }}>
+            <h1 style={{ fontSize: "2rem", fontWeight: 900, marginBottom: "1rem" }}>
+              KAVUNO 3D &bull; Manufatura Aditiva
+            </h1>
+            <p style={{ fontSize: "1rem", color: "var(--text-secondary)", marginBottom: "1.5rem" }}>
+              Nenhum produto cadastrado no momento. Acesse o painel administrativo para cadastrar produtos reais ou banners.
+            </p>
+            <Link href="/admin-login" className="btn btn-primary">
+              Acessar Painel Administrativo
+            </Link>
+          </div>
+        </section>
+      )}
 
-      <div className="container" style={{ marginTop: "2.5rem" }}>
-        {/* 2. Barra de Categorias com Ícones (Estilo ViVA / TechBazaar) */}
-        <section style={{ marginBottom: "3rem" }}>
-          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "1.25rem" }}>
-            <h2 style={{ fontSize: "1.25rem", fontWeight: 800, color: "var(--text-primary)" }}>
-              Categorias em Destaque
-            </h2>
-            <Link href="/catalogo" style={{ fontSize: "0.875rem", color: "var(--color-primary)", fontWeight: 600 }}>
-              Ver Todas &rarr;
+      {/* 2. ESTRUTURA DE CATEGORIAS REAIS DO BANCO (SEM ÍCONES GENÉRICOS DE IA - ESTILO IMAGEM 4) */}
+      {categories.length > 0 && (
+        <div className="container" style={{ marginTop: "3rem" }}>
+          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-end", marginBottom: "1.25rem" }}>
+            <div>
+              <span style={{ fontSize: "0.75rem", fontWeight: 700, color: "var(--color-primary)", textTransform: "uppercase", letterSpacing: "0.05em" }}>
+                DEPARTAMENTOS
+              </span>
+              <h2 style={{ fontSize: "1.5rem", fontWeight: 800, color: "var(--text-primary)", marginTop: "0.25rem" }}>
+                Categorias em Foco
+              </h2>
+            </div>
+            <Link href="/catalogo" style={{ fontSize: "0.875rem", color: "var(--color-primary)", fontWeight: 700 }}>
+              Ver Catálogo Completo &rarr;
             </Link>
           </div>
 
           <div
             style={{
               display: "grid",
-              gridTemplateColumns: "repeat(auto-fit, minmax(180px, 1fr))",
-              gap: "1rem",
+              gridTemplateColumns: "repeat(auto-fit, minmax(220px, 1fr))",
+              gap: "1.25rem",
             }}
           >
-            {[
-              { label: "Action Figures & Geek", icon: "🦾", slug: "decoracao-design", count: "Colecionáveis" },
-              { label: "Setup & Produtividade", icon: "🖥️", slug: "setup-produtividade", count: "Suportes e Mesas" },
-              { label: "Miniaturas & RPG", icon: "🎲", slug: "miniaturas-rpg", count: "D&D e Cenários" },
-              { label: "Engenharia & Peças", icon: "⚙️", slug: "prototipagem-engenharia", count: "PETG / ABS Alta Força" },
-            ].map((cat, idx) => (
+            {categories.map((cat) => (
               <Link
-                key={idx}
+                key={cat.id}
                 href={`/catalogo?categoria=${cat.slug}`}
                 style={{
-                  display: "flex",
-                  alignItems: "center",
-                  gap: "1rem",
-                  padding: "1rem 1.25rem",
+                  padding: "1.25rem 1.5rem",
                   backgroundColor: "var(--bg-surface)",
                   border: "1px solid var(--border-subtle)",
                   borderRadius: "var(--radius-lg)",
                   transition: "all var(--transition-fast)",
                   textDecoration: "none",
+                  display: "flex",
+                  flexDirection: "column",
+                  justifyContent: "space-between",
+                  minHeight: "100px",
                 }}
               >
-                <div
-                  style={{
-                    fontSize: "1.75rem",
-                    width: "44px",
-                    height: "44px",
-                    borderRadius: "var(--radius-md)",
-                    backgroundColor: "var(--bg-surface-elevated)",
-                    display: "flex",
-                    alignItems: "center",
-                    justifyContent: "center",
-                    flexShrink: 0,
-                  }}
-                >
-                  {cat.icon}
-                </div>
                 <div>
-                  <div style={{ fontSize: "0.9375rem", fontWeight: 700, color: "var(--text-primary)", lineHeight: 1.2 }}>
-                    {cat.label}
-                  </div>
-                  <div style={{ fontSize: "0.75rem", color: "var(--text-muted)", marginTop: "0.2rem" }}>
-                    {cat.count}
-                  </div>
+                  <h3 style={{ fontSize: "1.125rem", fontWeight: 800, color: "var(--text-primary)", marginBottom: "0.25rem" }}>
+                    {cat.name}
+                  </h3>
+                  {cat.description && (
+                    <p style={{ fontSize: "0.8125rem", color: "var(--text-secondary)", lineHeight: 1.4 }}>
+                      {cat.description}
+                    </p>
+                  )}
+                </div>
+                <div style={{ marginTop: "1rem", fontSize: "0.75rem", color: "var(--color-primary)", fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.05em" }}>
+                  Explorar Itens &rarr;
                 </div>
               </Link>
             ))}
           </div>
-        </section>
+        </div>
+      )}
 
-        {/* 3. Vitrine Principal de Produtos */}
-        <section style={{ marginBottom: "3.5rem" }}>
-          <div
+      {/* 3. VITRINE DE PRODUTOS REAIS (ESTILO IMAGEM 4 - GRID MODERNO E LIMPO) */}
+      <div className="container" style={{ marginTop: "3.5rem" }}>
+        <div
+          style={{
+            display: "flex",
+            justifyContent: "space-between",
+            alignItems: "flex-end",
+            marginBottom: "1.5rem",
+          }}
+        >
+          <div>
+            <span style={{ fontSize: "0.75rem", fontWeight: 700, color: "var(--color-primary)", textTransform: "uppercase", letterSpacing: "0.05em" }}>
+              CATÁLOGO DE LANÇAMENTOS
+            </span>
+            <h2 style={{ fontSize: "1.75rem", fontWeight: 800, color: "var(--text-primary)", marginTop: "0.25rem" }}>
+              Modelos Recentes da Impressora 3D
+            </h2>
+          </div>
+          <Link
+            href="/catalogo"
             style={{
-              display: "flex",
-              justifyContent: "space-between",
-              alignItems: "flex-end",
-              marginBottom: "1.5rem",
+              fontSize: "0.875rem",
+              color: "var(--color-primary)",
+              fontWeight: 700,
+              textDecoration: "none",
             }}
           >
-            <div>
-              <span style={{ fontSize: "0.75rem", fontWeight: 700, color: "var(--color-primary)", textTransform: "uppercase", letterSpacing: "0.05em" }}>
-                CATÁLOGO 3D
-              </span>
-              <h2 style={{ fontSize: "1.75rem", fontWeight: 800, color: "var(--text-primary)", marginTop: "0.25rem" }}>
-                Produtos em Destaque
-              </h2>
-            </div>
-            <Link
-              href="/catalogo"
-              style={{
-                fontSize: "0.875rem",
-                color: "var(--color-primary)",
-                fontWeight: 700,
-                textDecoration: "none",
-              }}
-            >
-              Ver Todos os Produtos &rarr;
+            Ver Todos ({products.length}) &rarr;
+          </Link>
+        </div>
+
+        {products.length === 0 ? (
+          <div
+            style={{
+              padding: "4rem 2rem",
+              textAlign: "center",
+              backgroundColor: "var(--bg-surface)",
+              border: "1px dashed var(--border-medium)",
+              borderRadius: "var(--radius-xl)",
+            }}
+          >
+            <h3 style={{ fontSize: "1.25rem", fontWeight: 800, color: "var(--text-primary)", marginBottom: "0.5rem" }}>
+              Nenhum produto ativo cadastrado no momento.
+            </h3>
+            <p style={{ fontSize: "0.875rem", color: "var(--text-secondary)", maxWidth: "460px", margin: "0 auto 1.5rem" }}>
+              Cadastre suas peças 3D reais no painel de administração para exibi-las aqui na vitrine.
+            </p>
+            <Link href="/admin/produtos/novo" className="btn btn-primary">
+              + Cadastrar Produto no Admin
             </Link>
           </div>
-
+        ) : (
           <div
             style={{
               display: "grid",
@@ -372,96 +478,95 @@ export default async function HomePage() {
               gap: "1.5rem",
             }}
           >
-            {displayProducts.map((product) => (
-              <ProductCard key={product.id} product={product as any} />
+            {products.map((product) => (
+              <ProductCard key={product.id} product={product} />
             ))}
           </div>
-        </section>
+        )}
 
-        {/* 4. Banner de Vantagens e Confiança (Estilo ViVA / Mercado Livre) */}
+        {/* 4. GARANTIAS & BENEFÍCIOS REFORMULADOS (SEM ÍCONES DE IA - ESTILO BRANDING PREMIUM) */}
         <section
           style={{
             display: "grid",
             gridTemplateColumns: "repeat(auto-fit, minmax(240px, 1fr))",
-            gap: "1.25rem",
-            marginBottom: "3.5rem",
+            gap: "1.5rem",
+            marginTop: "4rem",
+            marginBottom: "2rem",
           }}
         >
-          <div className="trust-banner-item">
-            <span style={{ fontSize: "2rem" }}>🚚</span>
-            <div>
-              <div style={{ fontWeight: 700, fontSize: "0.9375rem", color: "var(--text-primary)" }}>
-                Frete Rápido & Seguro
-              </div>
-              <div style={{ fontSize: "0.8125rem", color: "var(--text-secondary)" }}>
-                Rastreamento nacional direto no seu WhatsApp e e-mail.
-              </div>
+          <div
+            style={{
+              padding: "1.5rem",
+              backgroundColor: "var(--bg-surface)",
+              border: "1px solid var(--border-subtle)",
+              borderRadius: "var(--radius-lg)",
+            }}
+          >
+            <div style={{ fontSize: "0.75rem", fontWeight: 800, color: "var(--color-primary)", textTransform: "uppercase", letterSpacing: "0.05em", marginBottom: "0.5rem" }}>
+              LOGÍSTICA NACIONAL
+            </div>
+            <div style={{ fontWeight: 800, fontSize: "1rem", color: "var(--text-primary)", marginBottom: "0.35rem" }}>
+              Envio Rápido & Seguro
+            </div>
+            <div style={{ fontSize: "0.8125rem", color: "var(--text-secondary)", lineHeight: 1.5 }}>
+              Rastreamento direto com envio ágil para compras a pronta entrega.
             </div>
           </div>
 
-          <div className="trust-banner-item">
-            <span style={{ fontSize: "2rem" }}>💎</span>
-            <div>
-              <div style={{ fontWeight: 700, fontSize: "0.9375rem", color: "var(--text-primary)" }}>
-                Qualidade de Camada
-              </div>
-              <div style={{ fontSize: "0.8125rem", color: "var(--text-secondary)" }}>
-                Peças calibradas e inspecionadas manualmente antes do envio.
-              </div>
+          <div
+            style={{
+              padding: "1.5rem",
+              backgroundColor: "var(--bg-surface)",
+              border: "1px solid var(--border-subtle)",
+              borderRadius: "var(--radius-lg)",
+            }}
+          >
+            <div style={{ fontSize: "0.75rem", fontWeight: 800, color: "var(--color-primary)", textTransform: "uppercase", letterSpacing: "0.05em", marginBottom: "0.5rem" }}>
+              ENGENHARIA 3D
+            </div>
+            <div style={{ fontWeight: 800, fontSize: "1rem", color: "var(--text-primary)", marginBottom: "0.35rem" }}>
+              Precisão Dimensional
+            </div>
+            <div style={{ fontSize: "0.8125rem", color: "var(--text-secondary)", lineHeight: 1.5 }}>
+              Camadas de 0.12mm a 0.20mm com inspeção visual antes de qualquer envio.
             </div>
           </div>
 
-          <div className="trust-banner-item">
-            <span style={{ fontSize: "2rem" }}>🛡️</span>
-            <div>
-              <div style={{ fontWeight: 700, fontSize: "0.9375rem", color: "var(--text-primary)" }}>
-                Garantia KAVUNO
-              </div>
-              <div style={{ fontSize: "0.8125rem", color: "var(--text-secondary)" }}>
-                Troca facilitada ou reembolso sem complicação.
-              </div>
+          <div
+            style={{
+              padding: "1.5rem",
+              backgroundColor: "var(--bg-surface)",
+              border: "1px solid var(--border-subtle)",
+              borderRadius: "var(--radius-lg)",
+            }}
+          >
+            <div style={{ fontSize: "0.75rem", fontWeight: 800, color: "var(--color-primary)", textTransform: "uppercase", letterSpacing: "0.05em", marginBottom: "0.5rem" }}>
+              COMPRA PROTEGIDA
+            </div>
+            <div style={{ fontWeight: 800, fontSize: "1rem", color: "var(--text-primary)", marginBottom: "0.35rem" }}>
+              Garantia KAVUNO
+            </div>
+            <div style={{ fontSize: "0.8125rem", color: "var(--text-secondary)", lineHeight: 1.5 }}>
+              Compromisso de troca ou estorno em caso de avaria no transporte.
             </div>
           </div>
 
-          <div className="trust-banner-item">
-            <span style={{ fontSize: "2rem" }}>💳</span>
-            <div>
-              <div style={{ fontWeight: 700, fontSize: "0.9375rem", color: "var(--text-primary)" }}>
-                Pagamento Seguro
-              </div>
-              <div style={{ fontSize: "0.8125rem", color: "var(--text-secondary)" }}>
-                Até 12x no cartão ou desconto instantâneo no PIX.
-              </div>
+          <div
+            style={{
+              padding: "1.5rem",
+              backgroundColor: "var(--bg-surface)",
+              border: "1px solid var(--border-subtle)",
+              borderRadius: "var(--radius-lg)",
+            }}
+          >
+            <div style={{ fontSize: "0.75rem", fontWeight: 800, color: "var(--color-primary)", textTransform: "uppercase", letterSpacing: "0.05em", marginBottom: "0.5rem" }}>
+              CHECKOUT BLINDADO
             </div>
-          </div>
-        </section>
-
-        {/* 5. Newsletter / Chamada de Fidelidade */}
-        <section
-          style={{
-            background: "linear-gradient(135deg, #161b24 0%, #10131a 100%)",
-            border: "1px solid var(--border-medium)",
-            borderRadius: "var(--radius-xl)",
-            padding: "2.5rem 2rem",
-            textAlign: "center",
-          }}
-        >
-          <div style={{ maxWidth: "560px", margin: "0 auto" }}>
-            <span style={{ fontSize: "2rem", marginBottom: "0.5rem", display: "inline-block" }}>🎁</span>
-            <h2 style={{ fontSize: "1.5rem", fontWeight: 800, color: "var(--text-primary)", marginBottom: "0.5rem" }}>
-              Ganhe 10% OFF na sua Primeira Compra
-            </h2>
-            <p style={{ fontSize: "0.875rem", color: "var(--text-secondary)", marginBottom: "1.5rem" }}>
-              Cadastre-se na KAVUNO para receber em primeira mão novos modelos de action figures, cupons de desconto e lotes com pronta entrega.
-            </p>
-
-            <div style={{ display: "flex", gap: "0.75rem", justifyContent: "center", flexWrap: "wrap" }}>
-              <Link href="/cadastro" className="btn btn-primary" style={{ padding: "0.75rem 1.75rem" }}>
-                Criar Minha Conta Grátis
-              </Link>
-              <Link href="/catalogo" className="btn btn-secondary" style={{ padding: "0.75rem 1.5rem" }}>
-                Explorar Catálogo
-              </Link>
+            <div style={{ fontWeight: 800, fontSize: "1rem", color: "var(--text-primary)", marginBottom: "0.35rem" }}>
+              Mercado Pago Integrado
+            </div>
+            <div style={{ fontSize: "0.8125rem", color: "var(--text-secondary)", lineHeight: 1.5 }}>
+              PIX com aprovação imediata e cartões de crédito em até 12 parcelas.
             </div>
           </div>
         </section>

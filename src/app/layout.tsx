@@ -4,6 +4,7 @@ import { Navbar } from "@/components/layout/Navbar";
 import { Footer } from "@/components/layout/Footer";
 import { CartProvider } from "@/context/CartContext";
 import { CookieConsentBanner } from "@/components/analytics/CookieConsentBanner";
+import { ConditionalLayout } from "@/components/layout/ConditionalLayout";
 
 const appUrl = process.env.NEXT_PUBLIC_APP_URL || "https://kavuno.com.br";
 
@@ -120,10 +121,13 @@ export default function RootLayout({
       </head>
       <body>
         <CartProvider>
-          <Navbar />
-          <main style={{ flex: 1 }}>{children}</main>
-          <Footer />
-          <CookieConsentBanner />
+          <ConditionalLayout
+            navbar={<Navbar />}
+            footer={<Footer />}
+            cookieBanner={<CookieConsentBanner />}
+          >
+            {children}
+          </ConditionalLayout>
         </CartProvider>
       </body>
     </html>

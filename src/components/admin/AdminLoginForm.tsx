@@ -28,21 +28,12 @@ export const AdminLoginForm: React.FC = () => {
     >
       <div style={{ width: "100%", maxWidth: "440px" }}>
         <div style={{ textAlign: "center", marginBottom: "var(--spacing-xl)" }}>
-          <div
-            style={{
-              display: "inline-flex",
-              alignItems: "center",
-              justifyContent: "center",
-              width: "48px",
-              height: "48px",
-              borderRadius: "var(--radius-md)",
-              backgroundColor: "var(--bg-surface)",
-              border: "1px solid var(--border-medium)",
-              marginBottom: "1rem",
-              fontSize: "1.5rem",
-            }}
-          >
-            🛡️
+          <div style={{ marginBottom: "1.25rem", display: "flex", justifyContent: "center" }}>
+            <img
+              src="/logo.png"
+              alt="KAVUNO Logo"
+              style={{ height: "42px", width: "auto", objectFit: "contain" }}
+            />
           </div>
           <h1
             style={{

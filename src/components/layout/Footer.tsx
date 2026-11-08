@@ -1,5 +1,6 @@
 import React from "react";
 import Link from "next/link";
+import Image from "next/image";
 
 export const Footer: React.FC = () => {
   return (
@@ -13,6 +14,76 @@ export const Footer: React.FC = () => {
       }}
     >
       <div className="container">
+        {/* Banner de destaque no rodapé (Estilo streetwear / alta conversão) */}
+        <div
+          style={{
+            position: "relative",
+            width: "100%",
+            borderRadius: "var(--radius-xl)",
+            overflow: "hidden",
+            marginBottom: "3rem",
+            border: "1px solid var(--border-medium)",
+            background: "linear-gradient(135deg, rgba(255, 92, 0, 0.15) 0%, rgba(13, 16, 23, 0.95) 100%)",
+            padding: "clamp(2rem, 5vw, 3.5rem)",
+            display: "flex",
+            flexDirection: "column",
+            alignItems: "center",
+            textAlign: "center",
+            boxShadow: "var(--shadow-lg)",
+          }}
+        >
+          <div
+            style={{
+              textTransform: "uppercase",
+              fontSize: "0.75rem",
+              fontWeight: 800,
+              letterSpacing: "0.2em",
+              color: "var(--color-primary)",
+              marginBottom: "0.75rem",
+            }}
+          >
+            Oficina de Impressão 3D &bull; KAVUNO LAB
+          </div>
+          <h2
+            style={{
+              fontSize: "clamp(1.75rem, 4vw, 2.75rem)",
+              fontWeight: 900,
+              letterSpacing: "-0.03em",
+              color: "#ffffff",
+              maxWidth: "700px",
+              lineHeight: 1.15,
+              marginBottom: "1rem",
+            }}
+          >
+            CRIADO PARA DURAR. FORJADO COM PRECISÃO.
+          </h2>
+          <p
+            style={{
+              fontSize: "1rem",
+              color: "var(--text-secondary)",
+              maxWidth: "520px",
+              marginBottom: "2rem",
+              lineHeight: 1.6,
+            }}
+          >
+            Peças exclusivas com preenchimento reforçado, filamentos nobres e entrega rápida em todo o território nacional.
+          </p>
+          <Link
+            href="/catalogo"
+            className="btn btn-primary"
+            style={{
+              padding: "0.85rem 2.25rem",
+              fontSize: "0.9375rem",
+              fontWeight: 800,
+              letterSpacing: "0.05em",
+              borderRadius: "var(--radius-full)",
+              textTransform: "uppercase",
+            }}
+          >
+            Conferir Catálogo Completo &rarr;
+          </Link>
+        </div>
+
         <div
           style={{
             display: "grid",
@@ -31,21 +102,13 @@ export const Footer: React.FC = () => {
                 marginBottom: "1rem",
               }}
             >
-              <img
+              <Image
                 src="/logo.png"
                 alt="KAVUNO Logo"
-                style={{ width: "28px", height: "28px", objectFit: "contain" }}
+                width={140}
+                height={32}
+                style={{ height: "32px", width: "auto", objectFit: "contain" }}
               />
-              <span
-                style={{
-                  fontWeight: 900,
-                  fontSize: "1.25rem",
-                  color: "var(--text-primary)",
-                  letterSpacing: "0.02em",
-                }}
-              >
-                KAVUNO <span style={{ color: "var(--color-primary)", fontSize: "0.875rem" }}>3D</span>
-              </span>
             </div>
             <p
               style={{

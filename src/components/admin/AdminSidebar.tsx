@@ -14,6 +14,7 @@ interface NavItem {
 const navItems: NavItem[] = [
   { href: "/admin", label: "DASHBOARD", icon: "◈", exact: true },
   { href: "/admin/analytics", label: "ANALYTICS", icon: "📈" },
+  { href: "/admin/banners", label: "BANNERS & HERO", icon: "🖼️" },
   { href: "/admin/produtos", label: "PRODUTOS", icon: "⬡" },
   { href: "/admin/categorias", label: "CATEGORIAS", icon: "◫" },
   { href: "/admin/campanhas", label: "CAMPANHAS", icon: "⬟" },
@@ -63,19 +64,8 @@ export function AdminSidebar() {
           <img
             src="/logo.png"
             alt="KAVUNO Logo"
-            style={{ width: "24px", height: "24px", objectFit: "contain" }}
+            style={{ height: "26px", width: "auto", objectFit: "contain" }}
           />
-          <div
-            style={{
-              fontFamily: "var(--font-mono)",
-              fontWeight: 800,
-              fontSize: "1.125rem",
-              color: "var(--color-primary)",
-              letterSpacing: "0.05em",
-            }}
-          >
-            KAVUNO
-          </div>
         </Link>
       </div>
 

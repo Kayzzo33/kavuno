@@ -567,3 +567,101 @@ export async function updateCampaignStatusAction(
 
   return { success: true, message: `Status atualizado para "${status}".` };
 }
+
+// ============================================================================
+// BANNERS E CONFIGURAÇÕES DA LOJA (HERO E ANNOUNCEMENT BAR)
+// ============================================================================
+
+export async function updateSiteSettingsAction(
+  _prev: AdminActionResult | null,
+  formData: FormData
+): Promise<AdminActionResult> {
+  const { isAdmin } = await requireAdminSession();
+  if (!isAdmin) return { success: false, error: "Acesso negado." };
+
+  const heroMode = formData.get("hero_mode") as string;
+  const announcementText = (formData.get("announcement_text") as string)?.trim();
+
+  const supabase = await createClient();
+
+  if (heroMode) {
+    await (supabase.from("site_settings") as any).upsert({
+      key: "hero_mode",
+      value: heroMode,
+      updated_at: new Date().toISOString(),
+    });
+  }
+
+  if (announcementText) {
+    await (supabase.from("site_settings") as any).upsert({
+      key: "announcement_text",
+      value: announcementText,
+      updated_at: new Date().toISOString(),
+    });
+  }
+
+  revalidatePath("/");
+  revalidatePath("/admin/banners");
+
+  return { success: true, message: "Configurações da loja atualizadas com sucesso!" };
+}
+
+export async function createSiteBannerAction(
+  _prev: AdminActionResult | null,
+  formData: FormData
+): Promise<AdminActionResult> {
+  const { isAdmin } = await requireAdminSession();
+  if (!isAdmin) return { success: false, error: "Acesso negado." };
+
+  const title = (formData.get("title") as string)?.trim();
+  const subtitle = (formData.get("subtitle") as string)?.trim() || null;
+  const tag = (formData.get("tag") as string)?.trim() || null;
+  const imageUrl = (formData.get("image_url") as string)?.trim();
+  const linkUrl = (formData.get("link_url") as string)?.trim() || null;
+  const buttonText = (formData.get("button_text") as string)?.trim() || null;
+  const displayOrderStr = formData.get("display_order") as string;
+  const displayOrder = parseInt(displayOrderStr || "0", 10);
+  const isActive = formData.get("is_active") === "true";
+
+  if (!title) return { success: false, error: "Título do banner é obrigatório." };
+  if (!imageUrl) return { success: false, error: "URL da imagem do banner é obrigatória." };
+
+  const supabase = await createClient();
+  const { data, error } = await (supabase.from("site_banners") as any)
+    .insert({
+      title,
+      subtitle,
+      tag,
+      image_url: imageUrl,
+      link_url: linkUrl,
+      button_text: buttonText,
+      display_order: isNaN(displayOrder) ? 0 : displayOrder,
+      is_active: isActive,
+    })
+    .select("id")
+    .single();
+
+  if (error) return { success: false, error: `Erro ao criar banner: ${error.message}` };
+
+  revalidatePath("/");
+  revalidatePath("/admin/banners");
+
+  return { success: true, id: data.id, message: "Banner adicionado com sucesso!" };
+}
+
+export async function deleteSiteBannerAction(bannerId: string): Promise<AdminActionResult> {
+  const { isAdmin } = await requireAdminSession();
+  if (!isAdmin) return { success: false, error: "Acesso negado." };
+
+  const supabase = await createClient();
+  const { error } = await (supabase.from("site_banners") as any)
+    .delete()
+    .eq("id", bannerId);
+
+  if (error) return { success: false, error: error.message };
+
+  revalidatePath("/");
+  revalidatePath("/admin/banners");
+
+  return { success: true, message: "Banner removido com sucesso!" };
+}
