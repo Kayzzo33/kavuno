@@ -53,3 +53,4 @@ CREATE POLICY "site_settings_public_select" ON public.site_settings
 DROP POLICY IF EXISTS "site_settings_admin_all" ON public.site_settings;
 CREATE POLICY "site_settings_admin_all" ON public.site_settings
     FOR ALL TO authenticated USING (public.is_admin()) WITH CHECK (public.is_admin());
+

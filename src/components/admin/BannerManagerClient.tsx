@@ -189,3 +189,4 @@ export function BannerManagerClient({ settings, banners }: BannerManagerClientPr
     </div>
   );
 }
+
