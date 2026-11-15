@@ -1,4 +1,4 @@
-import { MetadataRoute } from "next";
+﻿import { MetadataRoute } from "next";
 
 export default function robots(): MetadataRoute.Robots {
   const baseUrl = process.env.NEXT_PUBLIC_APP_URL || "https://kavuno.com.br";
@@ -9,7 +9,7 @@ export default function robots(): MetadataRoute.Robots {
         userAgent: "*",
         allow: ["/", "/catalogo", "/produtos/", "/validacao"],
         disallow: [
-          "/admin/",
+          "/kavuno-gestao/",
           "/api/",
           "/perfil",
           "/checkout",
@@ -21,3 +21,4 @@ export default function robots(): MetadataRoute.Robots {
     sitemap: `${baseUrl}/sitemap.xml`,
   };
 }
+

@@ -1,4 +1,4 @@
-import { NextResponse, type NextRequest } from "next/server";
+﻿import { NextResponse, type NextRequest } from "next/server";
 import { createClient } from "@/lib/supabase/server";
 
 export async function GET(request: NextRequest) {
@@ -11,7 +11,7 @@ export async function GET(request: NextRequest) {
     const { error } = await supabase.auth.exchangeCodeForSession(code);
 
     if (!error) {
-      // Se for admin, direciona para o painel /admin em vez de perfil
+      // Se for admin, direciona para o painel /kavuno-gestao em vez de perfil
       const { data: { user } } = await supabase.auth.getUser();
       if (user) {
         const { data: profile } = await (supabase.from("profiles") as any)
@@ -20,7 +20,7 @@ export async function GET(request: NextRequest) {
           .single();
 
         if (profile?.role === "admin") {
-          return NextResponse.redirect(new URL("/admin", request.url));
+          return NextResponse.redirect(new URL("/kavuno-gestao", request.url));
         }
       }
 
@@ -33,3 +33,4 @@ export async function GET(request: NextRequest) {
     new URL(`/login?error=${encodeURIComponent("Código de autenticação inválido ou expirado.")}`, request.url)
   );
 }
+

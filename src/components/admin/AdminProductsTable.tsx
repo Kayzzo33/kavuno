@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import React, { useTransition } from "react";
 import Link from "next/link";
@@ -177,7 +177,7 @@ export function AdminProductsTable({ products }: AdminProductsTableProps) {
                 <td style={{ padding: "0.75rem 0.875rem" }}>
                   <div style={{ display: "flex", gap: "0.5rem", flexWrap: "nowrap" }}>
                     <Link
-                      href={`/admin/produtos/${product.id}/editar`}
+                      href={`/kavuno-gestao/produtos/${product.id}/editar`}
                       className="btn btn-bracket"
                       style={{ fontSize: "0.6875rem", padding: "0.3rem 0.6rem" }}
                     >
@@ -218,3 +218,4 @@ export function AdminProductsTable({ products }: AdminProductsTableProps) {
     </div>
   );
 }
+

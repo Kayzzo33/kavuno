@@ -1,4 +1,4 @@
-import { createAdminClient } from "@/lib/supabase/admin";
+﻿import { createAdminClient } from "@/lib/supabase/admin";
 
 export interface StockReservationResult {
   success: boolean;
@@ -114,3 +114,4 @@ export async function releaseStockForOrder(
     }
   }
 }
+

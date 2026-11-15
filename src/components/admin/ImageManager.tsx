@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import React, { useActionState, useTransition } from "react";
 import type { AdminProduct } from "@/lib/admin/queries";
@@ -232,3 +232,4 @@ export function ImageManager({ product }: ImageManagerProps) {
     </div>
   );
 }
+

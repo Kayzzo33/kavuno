@@ -1,4 +1,4 @@
-import { createServerClient, type CookieOptions } from "@supabase/ssr";
+﻿import { createServerClient, type CookieOptions } from "@supabase/ssr";
 import { NextResponse, type NextRequest } from "next/server";
 import type { Database } from "@/types/database.types";
 
@@ -52,17 +52,17 @@ export async function middleware(request: NextRequest) {
   const pathname = request.nextUrl.pathname;
 
   // Rotas de login administrativo são públicas para autenticação
-  const isAdminLogin = pathname === "/admin-login" || pathname === "/admin/login";
+  const isAdminLogin = pathname === "/kavuno-gestao/login" || pathname === "/admin-login";
 
   // Se já estiver logado e tentar acessar o login admin, deixa prosseguir para renderizar ou redirecionar
   if (isAdminLogin) {
     return supabaseResponse;
   }
 
-  // Proteção prévia em nível de rota para /admin/*
-  if (pathname.startsWith("/admin") || pathname.startsWith("/painel-admin")) {
+  // Proteção prévia em nível de rota para /kavuno-gestao/*
+  if (pathname.startsWith("/kavuno-gestao")) {
     if (!user) {
-      const adminLoginUrl = new URL("/admin-login", request.url);
+      const adminLoginUrl = new URL("/kavuno-gestao/login", request.url);
       adminLoginUrl.searchParams.set("error", "session_required");
       return NextResponse.redirect(adminLoginUrl);
     }
@@ -76,3 +76,4 @@ export const config = {
     "/((?!_next/static|_next/image|favicon.ico|.*\\.(?:svg|png|jpg|jpeg|gif|webp)$).*)",
   ],
 };
+

@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import React, { useTransition } from "react";
 import Link from "next/link";
@@ -185,3 +185,4 @@ export function AdminCampaignsTable({ campaigns }: AdminCampaignsTableProps) {
     </div>
   );
 }
+

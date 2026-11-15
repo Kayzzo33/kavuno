@@ -1,4 +1,4 @@
-// ============================================================================
+﻿// ============================================================================
 // src/lib/analytics/queries.ts
 // Consultas e Agregações de Telemetria e Diagnósticos de Produtos
 // ============================================================================
@@ -219,3 +219,4 @@ export async function getAnalyticsDashboardData(days: number = 30): Promise<Anal
     recentEvents: (allEvents.slice(0, 20) as any) as AnalyticsEventDTO[],
   };
 }
+

@@ -92,6 +92,7 @@ export async function getAdminProducts(params: {
   search?: string;
   categoryId?: string;
   commercialMode?: string;
+  statusFilter?: "all" | "active" | "draft" | "recent_imports";
   page?: number;
   limit?: number;
 }) {
@@ -113,6 +114,17 @@ export async function getAdminProducts(params: {
   }
   if (params.categoryId) query = query.eq("category_id", params.categoryId);
   if (params.commercialMode) query = query.eq("commercial_mode", params.commercialMode);
+
+  // Filtros por aba
+  if (params.statusFilter === "active") {
+    query = query.eq("is_active", true);
+  } else if (params.statusFilter === "draft") {
+    query = query.eq("is_active", false);
+  } else if (params.statusFilter === "recent_imports") {
+    // Importados recentemente: inativos criados nas últimas 72 horas ou mais recentes
+    const recentLimitDate = new Date(Date.now() - 72 * 60 * 60 * 1000).toISOString();
+    query = query.eq("is_active", false).gte("created_at", recentLimitDate);
+  }
 
   query = query.range(offset, offset + limit - 1);
 

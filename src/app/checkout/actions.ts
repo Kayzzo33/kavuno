@@ -1,4 +1,4 @@
-"use server";
+﻿"use server";
 
 import { createClient } from "@/lib/supabase/server";
 import { createAdminClient } from "@/lib/supabase/admin";
@@ -304,3 +304,4 @@ export async function processCheckoutAction(
     return { success: false, error: `Erro inesperado no servidor: ${err.message}` };
   }
 }
+

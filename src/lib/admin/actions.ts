@@ -1,4 +1,4 @@
-"use server";
+﻿"use server";
 
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
@@ -56,8 +56,8 @@ export async function adminSignInAction(
     };
   }
 
-  revalidatePath("/admin", "layout");
-  redirect("/admin");
+  revalidatePath("/kavuno-gestao", "layout");
+  redirect("/kavuno-gestao");
 }
 
 // ---------------------------------------------------------------------------
@@ -137,7 +137,7 @@ export async function createProductAction(
     return { success: false, error: `Erro ao criar produto: ${error.message}` };
   }
 
-  revalidatePath("/admin/produtos");
+  revalidatePath("/kavuno-gestao/produtos");
   revalidatePath("/catalogo");
   revalidatePath("/");
 
@@ -203,8 +203,8 @@ export async function updateProductAction(
     return { success: false, error: `Erro ao atualizar produto: ${error.message}` };
   }
 
-  revalidatePath("/admin/produtos");
-  revalidatePath(`/admin/produtos/${id}/editar`);
+  revalidatePath("/kavuno-gestao/produtos");
+  revalidatePath(`/kavuno-gestao/produtos/${id}/editar`);
   revalidatePath("/catalogo");
   revalidatePath("/");
 
@@ -225,7 +225,7 @@ export async function toggleProductActiveAction(
 
   if (error) return { success: false, error: error.message };
 
-  revalidatePath("/admin/produtos");
+  revalidatePath("/kavuno-gestao/produtos");
   revalidatePath("/catalogo");
   revalidatePath("/");
 
@@ -279,7 +279,7 @@ export async function createVariantAction(
     return { success: false, error: `Erro ao criar variante: ${error.message}` };
   }
 
-  revalidatePath(`/admin/produtos/${productId}/editar`);
+  revalidatePath(`/kavuno-gestao/produtos/${productId}/editar`);
   revalidatePath(`/produtos/${productId}`);
 
   return { success: true, id: data.id, message: "Variante criada com sucesso!" };
@@ -296,7 +296,7 @@ export async function deleteVariantAction(variantId: string, productId: string):
 
   if (error) return { success: false, error: error.message };
 
-  revalidatePath(`/admin/produtos/${productId}/editar`);
+  revalidatePath(`/kavuno-gestao/produtos/${productId}/editar`);
   return { success: true, message: "Variante desativada." };
 }
 
@@ -387,7 +387,7 @@ export async function addProductImageAction(
 
   if (error) return { success: false, error: `Erro ao adicionar imagem: ${error.message}` };
 
-  revalidatePath(`/admin/produtos/${productId}/editar`);
+  revalidatePath(`/kavuno-gestao/produtos/${productId}/editar`);
   revalidatePath(`/produtos/${productId}`);
 
   return { success: true, id: data.id, message: "Imagem cadastrada com sucesso!" };
@@ -404,7 +404,7 @@ export async function deleteProductImageAction(imageId: string, productId: strin
 
   if (error) return { success: false, error: error.message };
 
-  revalidatePath(`/admin/produtos/${productId}/editar`);
+  revalidatePath(`/kavuno-gestao/produtos/${productId}/editar`);
   revalidatePath(`/produtos/${productId}`);
 
   return { success: true, message: "Imagem removida." };
@@ -450,7 +450,7 @@ export async function createCategoryAction(
     return { success: false, error: `Erro ao criar categoria: ${error.message}` };
   }
 
-  revalidatePath("/admin/categorias");
+  revalidatePath("/kavuno-gestao/categorias");
   revalidatePath("/catalogo");
 
   return { success: true, id: data.id, message: "Categoria criada com sucesso!" };
@@ -482,7 +482,7 @@ export async function updateCategoryAction(
 
   if (error) return { success: false, error: error.message };
 
-  revalidatePath("/admin/categorias");
+  revalidatePath("/kavuno-gestao/categorias");
   revalidatePath("/catalogo");
 
   return { success: true, message: "Categoria atualizada." };
@@ -539,7 +539,7 @@ export async function createCampaignAction(
     return { success: false, error: `Erro ao criar campanha: ${error.message}` };
   }
 
-  revalidatePath("/admin/campanhas");
+  revalidatePath("/kavuno-gestao/campanhas");
   revalidatePath("/validacao");
 
   return { success: true, id: data.id, message: "Campanha criada com sucesso!" };
@@ -562,7 +562,7 @@ export async function updateCampaignStatusAction(
 
   if (error) return { success: false, error: error.message };
 
-  revalidatePath("/admin/campanhas");
+  revalidatePath("/kavuno-gestao/campanhas");
   revalidatePath("/validacao");
 
   return { success: true, message: `Status atualizado para "${status}".` };
@@ -601,7 +601,7 @@ export async function updateSiteSettingsAction(
   }
 
   revalidatePath("/");
-  revalidatePath("/admin/banners");
+  revalidatePath("/kavuno-gestao/banners");
 
   return { success: true, message: "Configurações da loja atualizadas com sucesso!" };
 }
@@ -621,7 +621,11 @@ export async function createSiteBannerAction(
   const buttonText = (formData.get("button_text") as string)?.trim() || null;
   const displayOrderStr = formData.get("display_order") as string;
   const displayOrder = parseInt(displayOrderStr || "0", 10);
-  const isActive = formData.get("is_active") === "true";
+  const position = ((formData.get("position") as string) || "hero").toLowerCase();
+
+  // Tratamento robusto para checkbox: se conter "true" ou "on" nos valores enviados
+  const activeValues = formData.getAll("is_active");
+  const isActive = activeValues.includes("true") || activeValues.includes("on");
 
   if (!title) return { success: false, error: "Título do banner é obrigatório." };
   if (!imageUrl) return { success: false, error: "URL da imagem do banner é obrigatória." };
@@ -637,6 +641,7 @@ export async function createSiteBannerAction(
       button_text: buttonText,
       display_order: isNaN(displayOrder) ? 0 : displayOrder,
       is_active: isActive,
+      position: position === "footer" ? "footer" : "hero",
     })
     .select("id")
     .single();
@@ -644,12 +649,167 @@ export async function createSiteBannerAction(
   if (error) return { success: false, error: `Erro ao criar banner: ${error.message}` };
 
   revalidatePath("/");
-  revalidatePath("/admin/banners");
+  revalidatePath("/kavuno-gestao/banners");
 
   return { success: true, id: data.id, message: "Banner adicionado com sucesso!" };
 }
 
-export async function deleteSiteBannerAction(bannerId: string): Promise<AdminActionResult> {
+export async function toggleSiteBannerActiveAction(bannerId: string, nextStatus: boolean): Promise<AdminActionResult> {
+  const { isAdmin } = await requireAdminSession();
+  if (!isAdmin) return { success: false, error: "Acesso negado." };
+
+  const supabase = await createClient();
+  const { error } = await (supabase.from("site_banners") as any)
+    .update({ is_active: nextStatus, updated_at: new Date().toISOString() })
+    .eq("id", bannerId);
+
+  if (error) return { success: false, error: error.message };
+
+  revalidatePath("/");
+  revalidatePath("/kavuno-gestao/banners");
+  return { success: true, message: nextStatus ? "Banner ativado!" : "Banner pausado." };
+}
+
+// ---------------------------------------------------------------------------
+// IMPORTAÇÃO EM LOTE DE PRODUTOS (SEMPRE COMO INATIVOS / RASCUNHO)
+// ---------------------------------------------------------------------------
+
+export interface ImportProductItemInput {
+  name: string;
+  base_price?: number;
+  short_description?: string;
+  category_id?: string;
+  commercial_mode?: "in_stock" | "pre_order" | "interest_lead";
+}
+
+export async function importProductsBatchAction(
+  _prevState: any,
+  formData: FormData
+): Promise<{ success: boolean; count?: number; message?: string; error?: string }> {
+  const { isAdmin } = await requireAdminSession();
+  if (!isAdmin) return { success: false, error: "Acesso administrativo obrigatório." };
+
+  const rawInput = (formData.get("batch_data") as string)?.trim();
+  if (!rawInput) {
+    return { success: false, error: "Insira ao menos um produto para importar." };
+  }
+
+  const itemsToInsert: ImportProductItemInput[] = [];
+
+  // 1. Tenta interpretar como JSON
+  if (rawInput.startsWith("[") && rawInput.endsWith("]")) {
+    try {
+      const parsed = JSON.parse(rawInput);
+      if (Array.isArray(parsed)) {
+        for (const item of parsed) {
+          if (item.name && typeof item.name === "string" && item.name.trim().length > 0) {
+            itemsToInsert.push({
+              name: item.name.trim(),
+              base_price: Number(item.base_price || item.preco || 89.0),
+              short_description: item.short_description || item.descricao || "",
+              category_id: item.category_id || undefined,
+              commercial_mode: item.commercial_mode || "in_stock",
+            });
+          }
+        }
+      }
+    } catch {
+      // Ignora erro de JSON e tenta modo linha a linha
+    }
+  }
+
+  // 2. Se não foi JSON, interpreta linha por linha (formato Nome | Preço | Descrição)
+  if (itemsToInsert.length === 0) {
+    const lines = rawInput.split("\n");
+    for (const rawLine of lines) {
+      const line = rawLine.trim();
+      if (!line || line.startsWith("#") || line.startsWith("//")) continue;
+
+      // Suporta separador por pipe '|' ou ponto e vírgula ';' ou vírgula
+      const parts = line.includes("|")
+        ? line.split("|")
+        : line.includes(";")
+        ? line.split(";")
+        : [line];
+
+      const name = parts[0]?.trim();
+      if (!name) continue;
+
+      const priceStr = parts[1]?.trim().replace("R$", "").replace(",", ".").trim();
+      const price = priceStr && !isNaN(parseFloat(priceStr)) ? parseFloat(priceStr) : 89.0;
+      const desc = parts[2]?.trim() || "";
+
+      itemsToInsert.push({
+        name,
+        base_price: price,
+        short_description: desc,
+        commercial_mode: "in_stock",
+      });
+    }
+  }
+
+  if (itemsToInsert.length === 0) {
+    return { success: false, error: "Nenhum produto válido identificado na lista." };
+  }
+
+  const supabase = await createClient();
+  let insertedCount = 0;
+
+  for (const item of itemsToInsert) {
+    const baseSlug = item.name
+      .toLowerCase()
+      .normalize("NFD")
+      .replace(/[\u0300-\u036f]/g, "")
+      .replace(/[^a-z0-9]+/g, "-")
+      .replace(/^-+|-+$/g, "");
+
+    const uniqueSlug = `${baseSlug}-${Math.random().toString(36).substring(2, 7)}`;
+
+    // Regra Crítica: TODOS vêm APENAS cadastrados como INATIVOS (is_active: false)
+    const { data: newProd, error: prodErr } = await (supabase.from("products") as any)
+      .insert({
+        name: item.name,
+        slug: uniqueSlug,
+        short_description: item.short_description || null,
+        full_description: item.short_description || null,
+        base_price: item.base_price || 89.0,
+        commercial_mode: item.commercial_mode || "in_stock",
+        is_active: false, // OBRIGATÓRIO: Apenas cadastrado, NÃO ativo
+        is_featured: false,
+        category_id: item.category_id || null,
+      })
+      .select("id")
+      .single();
+
+    if (!prodErr && newProd?.id) {
+      insertedCount++;
+      // Cria variante padrão inicial para facilitar o controle
+      await (supabase.from("product_variants") as any).insert({
+        product_id: newProd.id,
+        variant_name: "Padrão",
+        sku: `KAV-${Math.random().toString(36).substring(2, 8).toUpperCase()}`,
+        filament_material: "PLA",
+        print_time_hours: 3.5,
+        filament_weight_grams: 85,
+        price_in_stock: item.base_price || 89.0,
+        stock_quantity: 0,
+        is_active: true,
+      });
+    }
+  }
+
+  revalidatePath("/kavuno-gestao/produtos");
+  revalidatePath("/catalogo");
+  revalidatePath("/");
+
+    return {
+      success: true,
+      count: insertedCount,
+      message: `${insertedCount} produto(s) importado(s) com sucesso como RASCUNHO (Inativos). Você pode revisá-los e ativá-los individualmente.`,
+    };
+  }
+
+  export async function deleteSiteBannerAction(bannerId: string): Promise<AdminActionResult> {
   const { isAdmin } = await requireAdminSession();
   if (!isAdmin) return { success: false, error: "Acesso negado." };
 
@@ -661,7 +821,8 @@ export async function deleteSiteBannerAction(bannerId: string): Promise<AdminAct
   if (error) return { success: false, error: error.message };
 
   revalidatePath("/");
-  revalidatePath("/admin/banners");
+  revalidatePath("/kavuno-gestao/banners");
 
   return { success: true, message: "Banner removido com sucesso!" };
 }
+

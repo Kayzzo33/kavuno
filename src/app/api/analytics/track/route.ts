@@ -1,4 +1,4 @@
-import { NextRequest, NextResponse } from "next/server";
+﻿import { NextRequest, NextResponse } from "next/server";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { sanitizeAnalyticsMetadata } from "@/lib/analytics/tracker";
 import type { AnalyticsEventName } from "@/types/database.types";
@@ -41,3 +41,4 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: (err as Error).message }, { status: 500 });
   }
 }
+

@@ -32,16 +32,17 @@ export const Footer: React.FC = () => {
                 marginBottom: "1rem",
               }}
             >
-              <img
-                src="/logo.png"
-                alt="KAVUNO Logo"
-                style={{
-                  height: "36px",
-                  width: "auto",
-                  objectFit: "contain",
-                  filter: "invert(1)",
-                }}
-              />
+              <div style={{ backgroundColor: "#0f172a", borderRadius: "8px", padding: "5px 10px", display: "inline-flex", alignItems: "center" }}>
+                <img
+                  src="/logo.png"
+                  alt="KAVUNO Logo"
+                  style={{
+                    height: "28px",
+                    width: "auto",
+                    objectFit: "contain",
+                  }}
+                />
+              </div>
             </div>
             <p
               style={{

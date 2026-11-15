@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import React from "react";
 import Link from "next/link";
@@ -17,7 +17,7 @@ export function AdminSidebar() {
 
   const mainNav: NavItem[] = [
     {
-      href: "/admin",
+      href: "/kavuno-gestao",
       label: "Início",
       exact: true,
       icon: (
@@ -27,7 +27,7 @@ export function AdminSidebar() {
       ),
     },
     {
-      href: "/admin/pedidos",
+      href: "/kavuno-gestao/pedidos",
       label: "Pedidos",
       icon: (
         <svg width="18" height="18" viewBox="0 0 20 20" fill="currentColor">
@@ -36,7 +36,7 @@ export function AdminSidebar() {
       ),
     },
     {
-      href: "/admin/produtos",
+      href: "/kavuno-gestao/produtos",
       label: "Produtos",
       icon: (
         <svg width="18" height="18" viewBox="0 0 20 20" fill="currentColor">
@@ -45,7 +45,7 @@ export function AdminSidebar() {
       ),
     },
     {
-      href: "/admin/categorias",
+      href: "/kavuno-gestao/categorias",
       label: "Categorias & Coleções",
       icon: (
         <svg width="18" height="18" viewBox="0 0 20 20" fill="currentColor">
@@ -54,7 +54,7 @@ export function AdminSidebar() {
       ),
     },
     {
-      href: "/admin/campanhas",
+      href: "/kavuno-gestao/campanhas",
       label: "Campanhas de Lote",
       icon: (
         <svg width="18" height="18" viewBox="0 0 20 20" fill="currentColor">
@@ -63,7 +63,7 @@ export function AdminSidebar() {
       ),
     },
     {
-      href: "/admin/leads",
+      href: "/kavuno-gestao/leads",
       label: "Clientes & Reservas",
       icon: (
         <svg width="18" height="18" viewBox="0 0 20 20" fill="currentColor">
@@ -72,7 +72,7 @@ export function AdminSidebar() {
       ),
     },
     {
-      href: "/admin/banners",
+      href: "/kavuno-gestao/banners",
       label: "Banners & Vitrine",
       icon: (
         <svg width="18" height="18" viewBox="0 0 20 20" fill="currentColor">
@@ -81,7 +81,7 @@ export function AdminSidebar() {
       ),
     },
     {
-      href: "/admin/fabrica",
+      href: "/kavuno-gestao/fabrica",
       label: "Fábrica & Bobinas",
       icon: (
         <svg width="18" height="18" viewBox="0 0 20 20" fill="currentColor">
@@ -90,7 +90,7 @@ export function AdminSidebar() {
       ),
     },
     {
-      href: "/admin/analytics",
+      href: "/kavuno-gestao/analytics",
       label: "Analytics & Funil",
       icon: (
         <svg width="18" height="18" viewBox="0 0 20 20" fill="currentColor">
@@ -99,7 +99,7 @@ export function AdminSidebar() {
       ),
     },
     {
-      href: "/admin/financeiro",
+      href: "/kavuno-gestao/financeiro",
       label: "Financeiro & DRE",
       icon: (
         <svg width="18" height="18" viewBox="0 0 20 20" fill="currentColor">
@@ -256,3 +256,4 @@ export function AdminSidebar() {
     </aside>
   );
 }
+

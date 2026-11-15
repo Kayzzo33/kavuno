@@ -6,16 +6,33 @@ import { ProductCard } from "@/components/catalog/ProductCard";
 export const dynamic = "force-dynamic";
 
 export default async function HomePage() {
-  const [catalogData, categories, settings, banners] = await Promise.all([
-    getCatalogProducts({ limit: 16, sort: "newest" }),
-    getActiveCategories(),
-    getSiteSettings(),
-    getActiveSiteBanners(),
-  ]);
+  let catalogData: { products: any[]; total: number } = { products: [], total: 0 };
+  let categories: any[] = [];
+  let settings = {
+    hero_mode: "hot_products" as "hot_products" | "banner",
+    announcement_text: "🚚 Frete Grátis para todo Brasil acima de R$ 199 • 🛡️ Garantia de Acabamento 3D • ⚡ Despacho Rápido",
+  };
+  let banners: any[] = [];
+
+  try {
+    [catalogData, categories, settings, banners] = await Promise.all([
+      getCatalogProducts({ limit: 16, sort: "newest" }),
+      getActiveCategories(),
+      getSiteSettings(),
+      getActiveSiteBanners(),
+    ]);
+  } catch (err) {
+    console.error("[HomePage] Erro ao carregar dados:", err);
+  }
 
   const { products } = catalogData;
-  const hasBanners = banners && banners.length > 0;
-  const isBannerMode = settings.hero_mode === "banner" && hasBanners;
+  const heroBanners = (banners || []).filter((b) => (b.position || "hero") === "hero");
+  const footerBanners = (banners || []).filter((b) => b.position === "footer");
+
+  const hasHeroBanners = heroBanners.length > 0;
+  const isBannerMode = settings.hero_mode === "banner" && hasHeroBanners;
+  const activeHeroBanner = heroBanners[0];
+  const activeFooterBanner = footerBanners[0];
 
   // Se não houver banner cadastrado, o fluxo de hierarquia desce direto para os produtos / hot products
   const hotProduct = products.find((p) => p.is_featured) || products[0] || null;
@@ -24,7 +41,7 @@ export default async function HomePage() {
   return (
     <div style={{ backgroundColor: "#f8fafc", minHeight: "100vh", paddingBottom: "4rem" }}>
       {/* 1. SEÇÃO HERO: SE TIVER BANNER CADASTRADO E ATIVO EXIBE O BANNER, SENÃO SEGUE O FLUXO */}
-      {isBannerMode && hasBanners ? (
+      {isBannerMode && activeHeroBanner ? (
         <section style={{ padding: "1.5rem 0" }}>
           <div className="container">
             <div
@@ -43,8 +60,8 @@ export default async function HomePage() {
               }}
             >
               <img
-                src={banners[0].image_url}
-                alt={banners[0].title}
+                src={activeHeroBanner.image_url}
+                alt={activeHeroBanner.title}
                 style={{
                   position: "absolute",
                   inset: 0,
@@ -61,7 +78,7 @@ export default async function HomePage() {
                 }}
               />
               <div style={{ position: "relative", zIndex: 2, maxWidth: "560px" }}>
-                {banners[0].tag && (
+                {activeHeroBanner.tag && (
                   <span
                     style={{
                       display: "inline-block",
@@ -76,7 +93,7 @@ export default async function HomePage() {
                       marginBottom: "1rem",
                     }}
                   >
-                    {banners[0].tag}
+                    {activeHeroBanner.tag}
                   </span>
                 )}
                 <h1
@@ -88,16 +105,16 @@ export default async function HomePage() {
                     marginBottom: "1rem",
                   }}
                 >
-                  {banners[0].title}
+                  {activeHeroBanner.title}
                 </h1>
-                {banners[0].subtitle && (
+                {activeHeroBanner.subtitle && (
                   <p style={{ fontSize: "1rem", color: "#e2e8f0", lineHeight: 1.6, marginBottom: "1.75rem" }}>
-                    {banners[0].subtitle}
+                    {activeHeroBanner.subtitle}
                   </p>
                 )}
-                {banners[0].link_url && (
+                {activeHeroBanner.link_url && (
                   <Link
-                    href={banners[0].link_url}
+                    href={activeHeroBanner.link_url}
                     style={{
                       display: "inline-flex",
                       alignItems: "center",
@@ -111,7 +128,7 @@ export default async function HomePage() {
                       textDecoration: "none",
                     }}
                   >
-                    {banners[0].button_text || "Conferir Agora"} &rarr;
+                    {activeHeroBanner.button_text || "Conferir Agora"} &rarr;
                   </Link>
                 )}
               </div>
@@ -229,68 +246,70 @@ export default async function HomePage() {
       )}
 
       {/* 2. CATEGORIAS DE PRODUTOS CENTRALIZADAS COM ÍCONES */}
-      <section style={{ padding: "2rem 0" }}>
-        <div className="container">
-          <div style={{ textAlign: "center", marginBottom: "2rem" }}>
-            <span style={{ fontSize: "0.8125rem", fontWeight: 700, color: "#4f46e5", textTransform: "uppercase", letterSpacing: "0.05em" }}>
-              Categorias
-            </span>
-            <h2 style={{ fontSize: "1.75rem", fontWeight: 800, color: "#0f172a", marginTop: "0.25rem" }}>
-              Navegar por Categoria
-            </h2>
-          </div>
+      {categories.length > 0 && (
+        <section style={{ padding: "2rem 0" }}>
+          <div className="container">
+            <div style={{ textAlign: "center", marginBottom: "2rem" }}>
+              <span style={{ fontSize: "0.8125rem", fontWeight: 700, color: "#4f46e5", textTransform: "uppercase", letterSpacing: "0.05em" }}>
+                Categorias
+              </span>
+              <h2 style={{ fontSize: "1.75rem", fontWeight: 800, color: "#0f172a", marginTop: "0.25rem" }}>
+                Navegar por Categoria
+              </h2>
+            </div>
 
-          <div
-            style={{
-              display: "grid",
-              gridTemplateColumns: "repeat(auto-fit, minmax(130px, 1fr))",
-              gap: "1rem",
-            }}
-          >
-            {categories.map((cat) => (
-              <Link
-                key={cat.id}
-                href={`/catalogo?categoria=${cat.slug}`}
-                style={{
-                  backgroundColor: "#ffffff",
-                  border: "1px solid #e2e8f0",
-                  borderRadius: "16px",
-                  padding: "1.25rem 1rem",
-                  display: "flex",
-                  flexDirection: "column",
-                  alignItems: "center",
-                  textAlign: "center",
-                  textDecoration: "none",
-                  boxShadow: "0 2px 4px rgba(0, 0, 0, 0.02)",
-                  transition: "transform 0.15s ease, box-shadow 0.15s ease",
-                }}
-              >
-                <div
+            <div
+              style={{
+                display: "grid",
+                gridTemplateColumns: "repeat(auto-fit, minmax(130px, 1fr))",
+                gap: "1rem",
+              }}
+            >
+              {categories.map((cat) => (
+                <Link
+                  key={cat.id}
+                  href={`/catalogo?categoria=${cat.slug}`}
                   style={{
-                    width: "48px",
-                    height: "48px",
-                    borderRadius: "12px",
-                    backgroundColor: "#f1f5f9",
+                    backgroundColor: "#ffffff",
+                    border: "1px solid #e2e8f0",
+                    borderRadius: "16px",
+                    padding: "1.25rem 1rem",
                     display: "flex",
+                    flexDirection: "column",
                     alignItems: "center",
-                    justifyContent: "center",
-                    fontSize: "1.5rem",
-                    marginBottom: "0.75rem",
+                    textAlign: "center",
+                    textDecoration: "none",
+                    boxShadow: "0 2px 4px rgba(0, 0, 0, 0.02)",
+                    transition: "transform 0.15s ease, box-shadow 0.15s ease",
                   }}
                 >
-                  {cat.slug.includes("action") ? "🦸" : cat.slug.includes("geek") ? "👾" : cat.slug.includes("setup") ? "🖥️" : "⚙️"}
-                </div>
-                <span style={{ fontSize: "0.875rem", fontWeight: 700, color: "#0f172a" }}>
-                  {cat.name}
-                </span>
-                <span style={{ fontSize: "0.75rem", color: "#64748b", marginTop: "0.25rem" }}>
-                  Explorar
-                </span>
-              </Link>
-            ))}
+                  <div
+                    style={{
+                      width: "48px",
+                      height: "48px",
+                      borderRadius: "12px",
+                      backgroundColor: "#f1f5f9",
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "center",
+                      fontSize: "1.5rem",
+                      marginBottom: "0.75rem",
+                    }}
+                  >
+                    {cat.slug?.includes("action") ? "🦸" : cat.slug?.includes("geek") ? "👾" : cat.slug?.includes("setup") ? "🖥️" : "⚙️"}
+                  </div>
+                  <span style={{ fontSize: "0.875rem", fontWeight: 700, color: "#0f172a" }}>
+                    {cat.name}
+                  </span>
+                  <span style={{ fontSize: "0.75rem", color: "#64748b", marginTop: "0.25rem" }}>
+                    Explorar
+                  </span>
+                </Link>
+              ))}
+            </div>
           </div>
-        </div>
-      </section>
+        </section>
+      )}
 
       {/* 3. BANNER HORIZONTAL DE PRODUTOS HOT CENTRALIZADO */}
       {secondaryHotProducts.length > 0 && (
@@ -388,30 +407,129 @@ export default async function HomePage() {
       )}
 
       {/* 4. GRADE DE PRODUTOS REAIS (MAIS VENDIDOS) COM TÍTULO CENTRALIZADO */}
-      <section style={{ padding: "1.5rem 0" }}>
-        <div className="container">
-          <div style={{ textAlign: "center", marginBottom: "2.5rem" }}>
-            <span style={{ fontSize: "0.8125rem", fontWeight: 700, color: "#4f46e5", textTransform: "uppercase", letterSpacing: "0.05em" }}>
-              Nossos Produtos
-            </span>
-            <h2 style={{ fontSize: "1.75rem", fontWeight: 800, color: "#0f172a", marginTop: "0.25rem" }}>
-              Explore Nossos Mais Vendidos
-            </h2>
-          </div>
+      {products.length > 0 && (
+        <section style={{ padding: "1.5rem 0" }}>
+          <div className="container">
+            <div style={{ textAlign: "center", marginBottom: "2.5rem" }}>
+              <span style={{ fontSize: "0.8125rem", fontWeight: 700, color: "#4f46e5", textTransform: "uppercase", letterSpacing: "0.05em" }}>
+                Nossos Produtos
+              </span>
+              <h2 style={{ fontSize: "1.75rem", fontWeight: 800, color: "#0f172a", marginTop: "0.25rem" }}>
+                Explore Nossos Mais Vendidos
+              </h2>
+            </div>
 
-          <div
-            style={{
-              display: "grid",
-              gridTemplateColumns: "repeat(auto-fill, minmax(260px, 1fr))",
-              gap: "1.5rem",
-            }}
-          >
-            {products.map((product) => (
-              <ProductCard key={product.id} product={product} />
-            ))}
+            <div
+              style={{
+                display: "grid",
+                gridTemplateColumns: "repeat(auto-fill, minmax(260px, 1fr))",
+                gap: "1.5rem",
+              }}
+            >
+              {products.map((product) => (
+                <ProductCard key={product.id} product={product} />
+              ))}
+            </div>
           </div>
-        </div>
-      </section>
+        </section>
+      )}
+
+      {/* 5. BANNER PERSONALIZADO ACIMA DO FOOTER (SE CADASTRADO E ATIVO) */}
+      {activeFooterBanner && (
+        <section style={{ padding: "2.5rem 0 1rem" }}>
+          <div className="container">
+            <div
+              style={{
+                position: "relative",
+                width: "100%",
+                minHeight: "260px",
+                borderRadius: "20px",
+                overflow: "hidden",
+                border: "1px solid #e2e8f0",
+                display: "flex",
+                alignItems: "center",
+                padding: "clamp(1.5rem, 4vw, 3rem)",
+                backgroundColor: "#0f172a",
+                boxShadow: "0 4px 20px rgba(0,0,0,0.06)",
+              }}
+            >
+              <img
+                src={activeFooterBanner.image_url}
+                alt={activeFooterBanner.title}
+                style={{
+                  position: "absolute",
+                  inset: 0,
+                  width: "100%",
+                  height: "100%",
+                  objectFit: "cover",
+                }}
+              />
+              <div
+                style={{
+                  position: "absolute",
+                  inset: 0,
+                  background: "linear-gradient(to right, rgba(15, 23, 42, 0.9) 0%, rgba(15, 23, 42, 0.4) 60%, transparent 100%)",
+                }}
+              />
+              <div style={{ position: "relative", zIndex: 2, maxWidth: "580px" }}>
+                {activeFooterBanner.tag && (
+                  <span
+                    style={{
+                      display: "inline-block",
+                      fontSize: "0.75rem",
+                      fontWeight: 800,
+                      letterSpacing: "0.08em",
+                      textTransform: "uppercase",
+                      color: "#ffffff",
+                      backgroundColor: "#4f46e5",
+                      padding: "0.3rem 0.75rem",
+                      borderRadius: "9999px",
+                      marginBottom: "0.75rem",
+                    }}
+                  >
+                    {activeFooterBanner.tag}
+                  </span>
+                )}
+                <h3
+                  style={{
+                    fontSize: "clamp(1.5rem, 3vw, 2.25rem)",
+                    fontWeight: 900,
+                    color: "#ffffff",
+                    lineHeight: 1.2,
+                    marginBottom: "0.75rem",
+                  }}
+                >
+                  {activeFooterBanner.title}
+                </h3>
+                {activeFooterBanner.subtitle && (
+                  <p style={{ fontSize: "0.9375rem", color: "#cbd5e1", lineHeight: 1.5, marginBottom: "1.25rem" }}>
+                    {activeFooterBanner.subtitle}
+                  </p>
+                )}
+                {activeFooterBanner.link_url && (
+                  <Link
+                    href={activeFooterBanner.link_url}
+                    style={{
+                      display: "inline-flex",
+                      alignItems: "center",
+                      gap: "0.5rem",
+                      backgroundColor: "#4f46e5",
+                      color: "#ffffff",
+                      fontWeight: 700,
+                      fontSize: "0.875rem",
+                      padding: "0.75rem 1.5rem",
+                      borderRadius: "10px",
+                      textDecoration: "none",
+                    }}
+                  >
+                    {activeFooterBanner.button_text || "Aproveitar Agora"} &rarr;
+                  </Link>
+                )}
+              </div>
+            </div>
+          </div>
+        </section>
+      )}
     </div>
   );
 }

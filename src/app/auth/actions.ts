@@ -1,4 +1,4 @@
-"use server";
+﻿"use server";
 
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
@@ -102,7 +102,7 @@ export async function signInAction(
     return { success: false, error: error.message };
   }
 
-  // Se o usuário for administrador, redireciona diretamente para o painel /admin
+  // Se o usuário for administrador, redireciona diretamente para o painel /kavuno-gestao
   if (authData.user) {
     const { data: profile } = await (supabase.from("profiles") as any)
       .select("role")
@@ -111,8 +111,8 @@ export async function signInAction(
 
     if (profile?.role === "admin") {
       revalidatePath("/", "layout");
-      revalidatePath("/admin", "layout");
-      redirect("/admin");
+      revalidatePath("/kavuno-gestao", "layout");
+      redirect("/kavuno-gestao");
     }
   }
 
@@ -233,3 +233,4 @@ export async function updateProfileAction(
   revalidatePath("/perfil");
   return { success: true, message: "Dados cadastrais atualizados com sucesso!" };
 }
+

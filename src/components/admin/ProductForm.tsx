@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import React, { useActionState, useEffect } from "react";
 import { useRouter } from "next/navigation";
@@ -39,7 +39,7 @@ export function ProductForm({ product, categories, campaigns }: ProductFormProps
 
   useEffect(() => {
     if (state?.success && state.id && !isEdit) {
-      router.push(`/admin/produtos/${state.id}/editar`);
+      router.push(`/kavuno-gestao/produtos/${state.id}/editar`);
     }
   }, [state, isEdit, router]);
 
@@ -279,10 +279,11 @@ export function ProductForm({ product, categories, campaigns }: ProductFormProps
         >
           {isEdit ? "SALVAR ALTERAÇÕES" : "CRIAR PRODUTO"}
         </Button>
-        <a href="/admin/produtos" className="btn btn-bracket">
+        <a href="/kavuno-gestao/produtos" className="btn btn-bracket">
           CANCELAR
         </a>
       </div>
     </form>
   );
 }
+

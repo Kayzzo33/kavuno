@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import React, { useActionState } from "react";
 import { useRouter } from "next/navigation";
@@ -24,7 +24,7 @@ export function CampaignForm() {
 
   React.useEffect(() => {
     if (state?.success) {
-      router.push("/admin/campanhas");
+      router.push("/kavuno-gestao/campanhas");
     }
   }, [state, router]);
 
@@ -126,8 +126,9 @@ export function CampaignForm() {
         <Button type="submit" variant="primary" isLoading={isPending}>
           CRIAR CAMPANHA
         </Button>
-        <a href="/admin/campanhas" className="btn btn-bracket">CANCELAR</a>
+        <a href="/kavuno-gestao/campanhas" className="btn btn-bracket">CANCELAR</a>
       </div>
     </form>
   );
 }
+

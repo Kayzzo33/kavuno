@@ -191,6 +191,7 @@ export interface SiteBannerItem {
   button_text: string | null;
   display_order: number;
   is_active: boolean;
+  position?: "hero" | "footer";
 }
 
 export interface SiteSettingsData {
@@ -198,12 +199,31 @@ export interface SiteSettingsData {
   announcement_text: string;
 }
 
-export async function getActiveSiteBanners(): Promise<SiteBannerItem[]> {
+export async function getActiveSiteBanners(position?: "hero" | "footer"): Promise<SiteBannerItem[]> {
+  try {
+    const supabase = await createClient();
+    let query = (supabase.from("site_banners") as any)
+      .select("*")
+      .eq("is_active", true);
+
+    if (position) {
+      query = query.eq("position", position);
+    }
+
+    const { data, error } = await query.order("display_order", { ascending: true });
+
+    if (error) return [];
+    return data || [];
+  } catch {
+    return [];
+  }
+}
+
+export async function getAllSiteBanners(): Promise<SiteBannerItem[]> {
   try {
     const supabase = await createClient();
     const { data, error } = await (supabase.from("site_banners") as any)
       .select("*")
-      .eq("is_active", true)
       .order("display_order", { ascending: true });
 
     if (error) return [];

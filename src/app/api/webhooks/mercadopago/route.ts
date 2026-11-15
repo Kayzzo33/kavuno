@@ -1,4 +1,4 @@
-import { NextRequest, NextResponse } from "next/server";
+﻿import { NextRequest, NextResponse } from "next/server";
 import { mercadoPago } from "@/lib/payments/mercadopago";
 import { createAdminClient } from "@/lib/supabase/admin";
 
@@ -172,3 +172,4 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: error.message }, { status: 500 });
   }
 }
+

@@ -1,4 +1,4 @@
-// ============================================================================
+﻿// ============================================================================
 // src/lib/finance/queries.ts
 // Operações de Banco de Dados para o Módulo Financeiro e Conciliação
 //
@@ -91,17 +91,23 @@ export async function updateFinancialSettings(
 // ---------------------------------------------------------------------------
 
 export async function listExpenseCategories(): Promise<ExpenseCategoryDTO[]> {
-  const supabase = createAdminClient();
-  const { data, error } = await supabase
-    .from("expense_categories")
-    .select("*")
-    .order("name");
+  try {
+    const supabase = createAdminClient();
+    const { data, error } = await supabase
+      .from("expense_categories")
+      .select("*")
+      .order("name");
 
-  if (error) {
-    throw new Error(`Erro ao buscar categorias de despesa: ${error.message}`);
+    if (error) {
+      console.warn("Erro ao buscar categorias de despesa:", error.message);
+      return [];
+    }
+
+    return (data ?? []) as ExpenseCategoryDTO[];
+  } catch (err) {
+    console.warn("Exceção ao buscar categorias de despesa:", err);
+    return [];
   }
-
-  return (data ?? []) as ExpenseCategoryDTO[];
 }
 
 // ---------------------------------------------------------------------------
@@ -109,17 +115,23 @@ export async function listExpenseCategories(): Promise<ExpenseCategoryDTO[]> {
 // ---------------------------------------------------------------------------
 
 export async function listFinancialAssets(): Promise<FinancialAssetDTO[]> {
-  const supabase = createAdminClient();
-  const { data, error } = await supabase
-    .from("financial_assets")
-    .select("*")
-    .order("created_at", { ascending: false });
+  try {
+    const supabase = createAdminClient();
+    const { data, error } = await supabase
+      .from("financial_assets")
+      .select("*")
+      .order("created_at", { ascending: false });
 
-  if (error) {
-    throw new Error(`Erro ao buscar equipamentos: ${error.message}`);
+    if (error) {
+      console.warn("Erro ao buscar equipamentos:", error.message);
+      return [];
+    }
+
+    return (data ?? []) as FinancialAssetDTO[];
+  } catch (err) {
+    console.warn("Exceção ao buscar equipamentos:", err);
+    return [];
   }
-
-  return (data ?? []) as FinancialAssetDTO[];
 }
 
 export async function createFinancialAsset(input: {
@@ -210,7 +222,8 @@ export async function listFinancialTransactions(opts?: {
 
   const { data, error } = await query;
   if (error) {
-    throw new Error(`Erro ao buscar transações financeiras: ${error.message}`);
+    console.warn("Erro ao buscar transações financeiras:", error.message);
+    return [];
   }
 
   return (data ?? []).map((row: any) => ({
@@ -282,35 +295,41 @@ export async function createManualExpense(input: {
 // ---------------------------------------------------------------------------
 
 export async function listAccountsPayable(): Promise<AccountPayableDTO[]> {
-  const supabase = createAdminClient();
-  const { data, error } = await supabase
-    .from("accounts_payable")
-    .select("*, expense_categories(*)")
-    .order("due_date", { ascending: true });
+  try {
+    const supabase = createAdminClient();
+    const { data, error } = await supabase
+      .from("accounts_payable")
+      .select("*, expense_categories(*)")
+      .order("due_date", { ascending: true });
 
-  if (error) {
-    throw new Error(`Erro ao buscar contas a pagar: ${error.message}`);
+    if (error) {
+      console.warn("Erro ao buscar contas a pagar:", error.message);
+      return [];
+    }
+
+    return (data ?? []).map((row: any) => ({
+      id: row.id,
+      category_id: row.category_id,
+      category: row.expense_categories,
+      description: row.description,
+      due_date: row.due_date,
+      original_amount: Number(row.original_amount),
+      paid_amount: Number(row.paid_amount),
+      discount_amount: Number(row.discount_amount),
+      penalty_amount: Number(row.penalty_amount),
+      status: row.status,
+      paid_at: row.paid_at,
+      recipient_name: row.recipient_name,
+      invoice_number: row.invoice_number,
+      source_type: row.source_type,
+      source_id: row.source_id,
+      notes: row.notes,
+      created_at: row.created_at,
+    }));
+  } catch (err) {
+    console.warn("Exceção em listAccountsPayable:", err);
+    return [];
   }
-
-  return (data ?? []).map((row: any) => ({
-    id: row.id,
-    category_id: row.category_id,
-    category: row.expense_categories,
-    description: row.description,
-    due_date: row.due_date,
-    original_amount: Number(row.original_amount),
-    paid_amount: Number(row.paid_amount),
-    discount_amount: Number(row.discount_amount),
-    penalty_amount: Number(row.penalty_amount),
-    status: row.status,
-    paid_at: row.paid_at,
-    recipient_name: row.recipient_name,
-    invoice_number: row.invoice_number,
-    source_type: row.source_type,
-    source_id: row.source_id,
-    notes: row.notes,
-    created_at: row.created_at,
-  }));
 }
 
 export async function createAccountPayable(input: {
@@ -392,32 +411,38 @@ export async function settleAccountPayable(
 }
 
 export async function listAccountsReceivable(): Promise<AccountReceivableDTO[]> {
-  const supabase = createAdminClient();
-  const { data, error } = await supabase
-    .from("accounts_receivable")
-    .select("*")
-    .order("expected_clearance_date", { ascending: true });
+  try {
+    const supabase = createAdminClient();
+    const { data, error } = await supabase
+      .from("accounts_receivable")
+      .select("*")
+      .order("expected_clearance_date", { ascending: true });
 
-  if (error) {
-    throw new Error(`Erro ao buscar contas a receber: ${error.message}`);
+    if (error) {
+      console.warn("Erro ao buscar contas a receber:", error.message);
+      return [];
+    }
+
+    return (data ?? []).map((row: any) => ({
+      id: row.id,
+      order_id: row.order_id,
+      payment_id: row.payment_id,
+      description: row.description,
+      expected_clearance_date: row.expected_clearance_date,
+      gross_amount: Number(row.gross_amount),
+      estimated_fee: Number(row.estimated_fee),
+      net_expected_amount: Number(row.net_expected_amount),
+      received_net_amount: Number(row.received_net_amount),
+      status: row.status,
+      cleared_at: row.cleared_at,
+      gateway_settlement_id: row.gateway_settlement_id,
+      notes: row.notes,
+      created_at: row.created_at,
+    }));
+  } catch (err) {
+    console.warn("Exceção em listAccountsReceivable:", err);
+    return [];
   }
-
-  return (data ?? []).map((row: any) => ({
-    id: row.id,
-    order_id: row.order_id,
-    payment_id: row.payment_id,
-    description: row.description,
-    expected_clearance_date: row.expected_clearance_date,
-    gross_amount: Number(row.gross_amount),
-    estimated_fee: Number(row.estimated_fee),
-    net_expected_amount: Number(row.net_expected_amount),
-    received_net_amount: Number(row.received_net_amount),
-    status: row.status,
-    cleared_at: row.cleared_at,
-    gateway_settlement_id: row.gateway_settlement_id,
-    notes: row.notes,
-    created_at: row.created_at,
-  }));
 }
 
 export async function settleAccountReceivable(
@@ -532,43 +557,49 @@ export async function reconcileApprovedPayments(actorProfileId?: string): Promis
 // ---------------------------------------------------------------------------
 
 export async function listProductCostSnapshots(): Promise<ProductCostSnapshotDTO[]> {
-  const supabase = createAdminClient();
-  const { data, error } = await supabase
-    .from("product_cost_snapshots")
-    .select(`
-      *,
-      product_variants (
-        variant_name,
-        products (name)
-      )
-    `)
-    .order("created_at", { ascending: false });
+  try {
+    const supabase = createAdminClient();
+    const { data, error } = await supabase
+      .from("product_cost_snapshots")
+      .select(`
+        *,
+        product_variants (
+          variant_name,
+          products (name)
+        )
+      `)
+      .order("created_at", { ascending: false });
 
-  if (error) {
-    throw new Error(`Erro ao buscar snapshots de custo: ${error.message}`);
+    if (error) {
+      console.warn("Erro ao buscar snapshots de custo:", error.message);
+      return [];
+    }
+
+    return (data ?? []).map((row: any) => ({
+      id: row.id,
+      variant_id: row.variant_id,
+      variant_name: row.product_variants?.variant_name,
+      product_name: row.product_variants?.products?.name,
+      production_order_id: row.production_order_id,
+      calculation_type: row.calculation_type,
+      filament_cost: Number(row.filament_cost),
+      electricity_cost: Number(row.electricity_cost),
+      machine_depreciation_cost: Number(row.machine_depreciation_cost),
+      packaging_cost: Number(row.packaging_cost),
+      labor_cost: Number(row.labor_cost),
+      other_direct_cost: Number(row.other_direct_cost),
+      total_unit_cost: Number(row.total_unit_cost),
+      unit_sale_price: Number(row.unit_sale_price),
+      gross_margin_amount: Number(row.gross_margin_amount),
+      gross_margin_percent: Number(row.gross_margin_percent),
+      is_telemetry_missing: row.is_telemetry_missing,
+      missing_parameters_notes: row.missing_parameters_notes,
+      created_at: row.created_at,
+    }));
+  } catch (err) {
+    console.warn("Exceção em listProductCostSnapshots:", err);
+    return [];
   }
-
-  return (data ?? []).map((row: any) => ({
-    id: row.id,
-    variant_id: row.variant_id,
-    variant_name: row.product_variants?.variant_name,
-    product_name: row.product_variants?.products?.name,
-    production_order_id: row.production_order_id,
-    calculation_type: row.calculation_type,
-    filament_cost: Number(row.filament_cost),
-    electricity_cost: Number(row.electricity_cost),
-    machine_depreciation_cost: Number(row.machine_depreciation_cost),
-    packaging_cost: Number(row.packaging_cost),
-    labor_cost: Number(row.labor_cost),
-    other_direct_cost: Number(row.other_direct_cost),
-    total_unit_cost: Number(row.total_unit_cost),
-    unit_sale_price: Number(row.unit_sale_price),
-    gross_margin_amount: Number(row.gross_margin_amount),
-    gross_margin_percent: Number(row.gross_margin_percent),
-    is_telemetry_missing: row.is_telemetry_missing,
-    missing_parameters_notes: row.missing_parameters_notes,
-    created_at: row.created_at,
-  }));
 }
 
 export async function calculateAndSaveVariantCost(
@@ -689,3 +720,4 @@ export async function getFinancialDashboardMetrics() {
     pendingReceivables: receivables.filter((r) => r.status === "pending"),
   };
 }
+

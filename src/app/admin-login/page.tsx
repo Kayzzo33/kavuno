@@ -1,4 +1,4 @@
-import React, { Suspense } from "react";
+﻿import React, { Suspense } from "react";
 import type { Metadata } from "next";
 import { AdminLoginForm } from "@/components/admin/AdminLoginForm";
 import { LoadingSpinner } from "@/components/ui/LoadingSpinner";
@@ -24,3 +24,4 @@ export default function AdminLoginPage() {
     </Suspense>
   );
 }
+

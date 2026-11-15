@@ -1,4 +1,4 @@
-import React from "react";
+﻿import React from "react";
 import type { Metadata } from "next";
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
@@ -33,9 +33,9 @@ export default async function ProfilePage() {
   const profile = rawProfile as import("@/types/database.types").Database["public"]["Tables"]["profiles"]["Row"] | null;
   const isAdmin = profile?.role === "admin";
 
-  // Se for administrador, redireciona diretamente para o painel /admin
+  // Se for administrador, redireciona diretamente para o painel /kavuno-gestao
   if (isAdmin) {
-    redirect("/admin");
+    redirect("/kavuno-gestao");
   }
 
   return (
@@ -150,3 +150,4 @@ export default async function ProfilePage() {
     </div>
   );
 }
+

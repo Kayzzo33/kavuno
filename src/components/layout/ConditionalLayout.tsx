@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import React from "react";
 import { usePathname } from "next/navigation";
@@ -15,7 +15,7 @@ export function ConditionalLayout({
   children: React.ReactNode;
 }) {
   const pathname = usePathname();
-  const isAdminRoute = pathname?.startsWith("/admin") || pathname?.startsWith("/admin-login") || pathname?.startsWith("/painel-admin");
+  const isAdminRoute = pathname?.startsWith("/kavuno-gestao") || pathname?.startsWith("/kavuno-gestao-login") || pathname?.startsWith("/painel-admin");
 
   if (isAdminRoute) {
     return <main style={{ flex: 1, minHeight: "100vh" }}>{children}</main>;
@@ -30,4 +30,5 @@ export function ConditionalLayout({
     </>
   );
 }
+
 

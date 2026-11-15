@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import React, { useActionState } from "react";
 import { useRouter } from "next/navigation";
@@ -34,7 +34,7 @@ export function CategoryForm({ category, categories = [] }: CategoryFormProps) {
 
   React.useEffect(() => {
     if (state?.success && !isEdit) {
-      router.push("/admin/categorias");
+      router.push("/kavuno-gestao/categorias");
     }
   }, [state, isEdit, router]);
 
@@ -131,8 +131,9 @@ export function CategoryForm({ category, categories = [] }: CategoryFormProps) {
         <Button type="submit" variant="primary" isLoading={isPending}>
           {isEdit ? "SALVAR" : "CRIAR CATEGORIA"}
         </Button>
-        <a href="/admin/categorias" className="btn btn-bracket">CANCELAR</a>
+        <a href="/kavuno-gestao/categorias" className="btn btn-bracket">CANCELAR</a>
       </div>
     </form>
   );
 }
+

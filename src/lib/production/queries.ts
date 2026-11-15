@@ -1,4 +1,4 @@
-// ============================================================================
+﻿// ============================================================================
 // src/lib/production/queries.ts
 // Consultas server-side para bobinas de filamento e ordens de produção.
 // Usa o cliente admin (service_role) para operar além do RLS quando necessário,
@@ -318,3 +318,4 @@ export async function linkSpoolToOrder(opts: {
     throw new Error(`Erro ao vincular bobina à ordem: ${error.message}`);
   return data;
 }
+

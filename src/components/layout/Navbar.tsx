@@ -9,8 +9,17 @@ import { getSiteSettings } from "@/lib/catalog/queries";
 export const Navbar = async () => {
   let userName: string | null = null;
   let isAuthenticated = false;
+  let announcementText =
+    "🚚 Frete Grátis para todo Brasil acima de R$ 199 • 🛡️ Garantia de Acabamento 3D • ⚡ Despacho Rápido de Pronta Entrega • 🎯 Precisão Geométrica Rigorosa • ";
 
-  const settings = await getSiteSettings();
+  try {
+    const settings = await getSiteSettings();
+    if (settings?.announcement_text) {
+      announcementText = settings.announcement_text;
+    }
+  } catch (err) {
+    console.warn("[Navbar] Fallback em getSiteSettings:", err);
+  }
 
   try {
     const supabase = await createClient();
@@ -32,11 +41,6 @@ export const Navbar = async () => {
   } catch {
     // Silencioso para navegação anônima
   }
-
-  // Prepara o texto do anúncio para o marquee contínuo
-  const announcementText =
-    settings.announcement_text ||
-    "🚚 Frete Grátis para todo Brasil acima de R$ 199 • 🛡️ Garantia de Acabamento 3D • ⚡ Despacho Rápido de Pronta Entrega • 🎯 Precisão Geométrica Rigorosa • ";
 
   return (
     <>
@@ -82,16 +86,25 @@ export const Navbar = async () => {
               flexShrink: 0,
             }}
           >
-            <img
-              src="/logo.png"
-              alt="KAVUNO Logo"
+            <div
               style={{
-                height: "46px", // Logo maior conforme solicitado
-                width: "auto",
-                objectFit: "contain",
-                filter: "invert(1)", // Torna o logo branco nítido no header branco
+                backgroundColor: "#0f172a",
+                borderRadius: "10px",
+                padding: "6px 12px",
+                display: "flex",
+                alignItems: "center",
               }}
-            />
+            >
+              <img
+                src="/logo.png"
+                alt="KAVUNO Logo"
+                style={{
+                  height: "32px",
+                  width: "auto",
+                  objectFit: "contain",
+                }}
+              />
+            </div>
           </Link>
 
           {/* Links Centrais de Navegação */}
