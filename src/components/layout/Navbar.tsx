@@ -1,19 +1,20 @@
 import React, { Suspense } from "react";
 import Link from "next/link";
-import Image from "next/image";
 import { createClient } from "@/lib/supabase/server";
 import { signOutAction } from "@/app/auth/actions";
 import { CartNavbarButton } from "@/components/layout/CartNavbarButton";
 import { NavbarSearch } from "@/components/layout/NavbarSearch";
-import { getSiteSettings } from "@/lib/catalog/queries";
+import { getSiteSettings, getActiveCategories } from "@/lib/catalog/queries";
 
 export const Navbar = async () => {
   let userName: string | null = null;
-  let userEmail: string | null = null;
   let isAuthenticated = false;
   let isAdmin = false;
 
-  const settings = await getSiteSettings();
+  const [settings, categories] = await Promise.all([
+    getSiteSettings(),
+    getActiveCategories(),
+  ]);
 
   try {
     const supabase = await createClient();
@@ -23,7 +24,6 @@ export const Navbar = async () => {
 
     if (user) {
       isAuthenticated = true;
-      userEmail = user.email || null;
       userName = user.user_metadata?.full_name || user.email?.split("@")[0] || null;
 
       const { data: profile } = await (supabase.from("profiles") as any)
@@ -35,114 +35,158 @@ export const Navbar = async () => {
       if (profile?.role === "admin") isAdmin = true;
     }
   } catch {
-    // Falha silenciosa para navegação anônima
+    // Silencioso para navegação anônima
   }
 
   return (
     <>
-      {/* Top Announcement Bar (Configurável via Admin) */}
-      <div className="announcement-bar">
-        <span>{settings.announcement_text}</span>
+      {/* 1. Barra Superior Informativa (Branca / Azul Claro com frete grátis) */}
+      <div
+        style={{
+          backgroundColor: "#f8fafc",
+          borderBottom: "1px solid #e2e8f0",
+          fontSize: "0.75rem",
+          color: "#475569",
+          padding: "0.4rem 0",
+          textAlign: "center",
+          fontWeight: 500,
+        }}
+      >
+        <div className="container" style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+          <span>📦 {settings.announcement_text || "Frete Grátis em pedidos acima de R$ 199"}</span>
+          <div style={{ display: "flex", gap: "1rem" }}>
+            <span>⚡ Manufatura Aditiva de Alta Precisão</span>
+            <span>⭐ Garantia de Acabamento 3D</span>
+          </div>
+        </div>
       </div>
 
+      {/* 2. Header Principal Branco com Sombra Leve */}
       <header
         style={{
-          borderBottom: "1px solid var(--border-subtle)",
-          backgroundColor: "rgba(9, 11, 14, 0.95)",
-          backdropFilter: "blur(14px)",
+          backgroundColor: "#ffffff",
+          borderBottom: "1px solid #e2e8f0",
           position: "sticky",
           top: 0,
           zIndex: 50,
+          boxShadow: "0 2px 4px rgba(0, 0, 0, 0.02)",
         }}
       >
-        {/* Linha Principal do Cabeçalho */}
         <div
           className="container"
           style={{
             display: "flex",
             alignItems: "center",
             justifyContent: "space-between",
-            gap: "1.5rem",
+            gap: "2rem",
             paddingTop: "0.85rem",
             paddingBottom: "0.85rem",
           }}
         >
-          {/* Logo KAVUNO */}
+          {/* Logo da Loja */}
           <Link
             href="/"
             style={{
               display: "flex",
               alignItems: "center",
-              gap: "0.625rem",
+              gap: "0.5rem",
               textDecoration: "none",
               flexShrink: 0,
             }}
           >
-            <Image
+            <img
               src="/logo.png"
               alt="KAVUNO Logo"
-              width={160}
-              height={36}
               style={{
                 height: "36px",
                 width: "auto",
                 objectFit: "contain",
+                filter: "invert(1)", // Torna a logo branca legível no fundo branco
               }}
-              priority
             />
           </Link>
 
-          {/* Barra de Pesquisa Centralizada (Estilo Mercado Livre / TechBazaar) */}
-          <div style={{ flex: 1, maxWidth: "560px", display: "flex", justifyContent: "center" }}>
-            <Suspense fallback={<div style={{ height: "2.6rem" }} />}>
+          {/* Links Centrais de Navegação (Estilo NovaTech) */}
+          <nav
+            style={{
+              display: "flex",
+              alignItems: "center",
+              gap: "1.75rem",
+              fontSize: "0.9375rem",
+              fontWeight: 600,
+            }}
+          >
+            <Link href="/" style={{ color: "#0f172a", textDecoration: "none" }}>
+              Início
+            </Link>
+            <Link href="/catalogo" style={{ color: "#475569", textDecoration: "none" }}>
+              Catálogo
+            </Link>
+            <Link href="/catalogo?modalidade=in_stock" style={{ color: "#475569", textDecoration: "none" }}>
+              Pronta Entrega
+            </Link>
+            <Link href="/catalogo?modalidade=pre_order" style={{ color: "#475569", textDecoration: "none" }}>
+              Pré-Vendas
+            </Link>
+            {isAdmin && (
+              <Link
+                href="/admin"
+                style={{
+                  color: "#008060",
+                  textDecoration: "none",
+                  fontWeight: 700,
+                  display: "flex",
+                  alignItems: "center",
+                  gap: "0.25rem",
+                }}
+              >
+                <span style={{ width: "8px", height: "8px", borderRadius: "50%", backgroundColor: "#008060" }} />
+                Painel Admin
+              </Link>
+            )}
+          </nav>
+
+          {/* Campo de Busca Inteligente estilo NovaTech */}
+          <div style={{ flex: 1, maxWidth: "380px" }}>
+            <Suspense fallback={<div style={{ height: "40px" }} />}>
               <NavbarSearch />
             </Suspense>
           </div>
 
-          {/* Ações: Conta do Usuário e Carrinho */}
+          {/* Ações do Usuário & Carrinho */}
           <div style={{ display: "flex", alignItems: "center", gap: "1rem", flexShrink: 0 }}>
             {isAuthenticated ? (
-              <div style={{ display: "flex", alignItems: "center", gap: "0.875rem" }}>
+              <div style={{ display: "flex", alignItems: "center", gap: "0.75rem" }}>
                 <Link
                   href="/perfil"
                   style={{
                     display: "flex",
                     alignItems: "center",
                     gap: "0.5rem",
-                    padding: "0.45rem 0.75rem",
-                    borderRadius: "var(--radius-md)",
-                    backgroundColor: "var(--bg-surface)",
-                    border: "1px solid var(--border-medium)",
-                    color: "var(--text-primary)",
                     textDecoration: "none",
+                    color: "#0f172a",
                     fontSize: "0.875rem",
+                    fontWeight: 600,
                   }}
                 >
-                  <span style={{ fontSize: "1rem" }}>👤</span>
-                  <div style={{ display: "flex", flexDirection: "column", textAlign: "left" }}>
-                    <span style={{ fontSize: "0.6875rem", color: "var(--text-muted)", lineHeight: 1 }}>Olá,</span>
-                    <strong style={{ fontSize: "0.8125rem", maxWidth: "120px", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
-                      {userName || userEmail?.split("@")[0]}
-                    </strong>
-                  </div>
-                </Link>
-
-                {isAdmin && (
-                  <Link
-                    href="/admin"
+                  <div
                     style={{
-                      padding: "0.45rem 0.75rem",
-                      borderRadius: "var(--radius-md)",
-                      backgroundColor: "rgba(255, 92, 0, 0.15)",
-                      border: "1px solid var(--color-primary)",
-                      color: "var(--color-primary)",
-                      fontSize: "0.75rem",
+                      width: "32px",
+                      height: "32px",
+                      borderRadius: "50%",
+                      backgroundColor: "#4f46e5",
+                      color: "#ffffff",
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "center",
+                      fontSize: "0.8125rem",
                       fontWeight: 700,
                     }}
                   >
-                    PAINEL ADMIN
-                  </Link>
-                )}
+                    {userName ? userName.charAt(0).toUpperCase() : "U"}
+                  </div>
+                  <span>{userName?.split(" ")[0]}</span>
+                </Link>
 
                 <form action={signOutAction}>
                   <button
@@ -150,11 +194,10 @@ export const Navbar = async () => {
                     style={{
                       background: "none",
                       border: "none",
-                      fontSize: "0.8125rem",
-                      color: "var(--text-muted)",
+                      color: "#94a3b8",
+                      fontSize: "0.75rem",
                       cursor: "pointer",
                       padding: "0.25rem",
-                      textDecoration: "underline",
                     }}
                   >
                     Sair
@@ -162,26 +205,29 @@ export const Navbar = async () => {
                 </form>
               </div>
             ) : (
-              <div style={{ display: "flex", alignItems: "center", gap: "0.75rem" }}>
+              <div style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
                 <Link
                   href="/login"
                   style={{
+                    color: "#0f172a",
                     fontSize: "0.875rem",
                     fontWeight: 600,
-                    color: "var(--text-secondary)",
-                    padding: "0.45rem 0.85rem",
-                    borderRadius: "var(--radius-md)",
+                    textDecoration: "none",
+                    padding: "0.4rem 0.75rem",
                   }}
                 >
                   Entrar
                 </Link>
                 <Link
                   href="/cadastro"
-                  className="btn btn-primary"
                   style={{
-                    fontSize: "0.8125rem",
-                    padding: "0.45rem 0.95rem",
-                    borderRadius: "var(--radius-md)",
+                    backgroundColor: "#4f46e5",
+                    color: "#ffffff",
+                    fontSize: "0.875rem",
+                    fontWeight: 600,
+                    textDecoration: "none",
+                    padding: "0.5rem 1rem",
+                    borderRadius: "8px",
                   }}
                 >
                   Criar Conta
@@ -189,82 +235,8 @@ export const Navbar = async () => {
               </div>
             )}
 
+            {/* Botão de Carrinho com badge */}
             <CartNavbarButton />
-          </div>
-        </div>
-
-        {/* Sub-Navegação de Categorias Rápidas (Estilo Nuvemshop / TechBazaar / Shopee) */}
-        <div
-          style={{
-            borderTop: "1px solid var(--border-subtle)",
-            backgroundColor: "rgba(13, 16, 22, 0.98)",
-            overflowX: "auto",
-            scrollbarWidth: "none",
-          }}
-        >
-          <div
-            className="container"
-            style={{
-              display: "flex",
-              alignItems: "center",
-              gap: "1.75rem",
-              height: "2.5rem",
-              fontSize: "0.8125rem",
-              fontWeight: 500,
-              whiteSpace: "nowrap",
-            }}
-          >
-            <Link
-              href="/catalogo"
-              style={{
-                color: "var(--text-primary)",
-                fontWeight: 600,
-                display: "flex",
-                alignItems: "center",
-                gap: "0.35rem",
-              }}
-            >
-              <span>☰</span> Todos os Produtos
-            </Link>
-            <Link
-              href="/catalogo?modalidade=in_stock"
-              style={{
-                color: "var(--mode-in-stock)",
-                fontWeight: 600,
-                display: "flex",
-                alignItems: "center",
-                gap: "0.35rem",
-              }}
-            >
-              <span>⚡</span> Pronta Entrega
-            </Link>
-            <Link
-              href="/catalogo?categoria=decoracao-design"
-              style={{ color: "var(--text-secondary)", transition: "color var(--transition-fast)" }}
-            >
-              🎮 Action Figures & Geek
-            </Link>
-            <Link
-              href="/catalogo?categoria=setup-produtividade"
-              style={{ color: "var(--text-secondary)", transition: "color var(--transition-fast)" }}
-            >
-              🖥️ Setup & Desk
-            </Link>
-            <Link
-              href="/catalogo?categoria=prototipagem-engenharia"
-              style={{ color: "var(--text-secondary)", transition: "color var(--transition-fast)" }}
-            >
-              ⚙️ Peças Técnicas & Mecânicas
-            </Link>
-            <Link
-              href="/catalogo?ordenar=price_asc"
-              style={{
-                color: "var(--color-primary)",
-                fontWeight: 600,
-              }}
-            >
-              🏷️ Ofertas Especiais
-            </Link>
           </div>
         </div>
       </header>

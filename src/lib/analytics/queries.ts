@@ -13,21 +13,22 @@ import type {
 } from "@/types/analytics.types";
 
 export async function getAnalyticsDashboardData(days: number = 30): Promise<AnalyticsDashboardData> {
-  const supabase = createAdminClient();
+  const { createClient } = await import("@/lib/supabase/server");
+  const supabase = await createClient();
   const sinceDate = new Date(Date.now() - days * 24 * 60 * 60 * 1000).toISOString();
 
-  // 1. Buscar todos os eventos do período
-  const { data: events, error } = await supabase
-    .from("analytics_events")
+  // 1. Buscar todos os eventos do período com tratamento defensivo
+  const { data: events, error } = await (supabase.from("analytics_events") as any)
     .select("*")
     .gte("created_at", sinceDate)
     .order("created_at", { ascending: false });
 
   if (error) {
-    throw new Error(`Erro ao buscar telemetria analítica: ${error.message}`);
+    // Retorna fallback limpo e seguro em vez de quebrar a página
+    console.error("Aviso ao carregar analytics_events:", error.message);
   }
 
-  const allEvents = events ?? [];
+  const allEvents: AnalyticsEventDTO[] = (events as any[]) ?? [];
 
   // 2. Contadores gerais do funil
   let totalViews = 0;

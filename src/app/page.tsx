@@ -1,6 +1,5 @@
 import React from "react";
 import Link from "next/link";
-import Image from "next/image";
 import { getCatalogProducts, getActiveCategories, getSiteSettings, getActiveSiteBanners } from "@/lib/catalog/queries";
 import { ProductCard } from "@/components/catalog/ProductCard";
 
@@ -8,379 +7,162 @@ export const dynamic = "force-dynamic";
 
 export default async function HomePage() {
   const [catalogData, categories, settings, banners] = await Promise.all([
-    getCatalogProducts({ limit: 12, sort: "newest" }),
+    getCatalogProducts({ limit: 16, sort: "newest" }),
     getActiveCategories(),
     getSiteSettings(),
     getActiveSiteBanners(),
   ]);
 
   const { products } = catalogData;
-  const isBannerMode = settings.hero_mode === "banner" && banners.length > 0;
-  const activeBanner = banners[0];
-
-  // Identifica o produto em destaque principal para o Hero (estilo imagem 3 / Hypeclt)
   const hotProduct = products.find((p) => p.is_featured) || products[0] || null;
   const secondaryHotProducts = products.filter((p) => p.id !== hotProduct?.id).slice(0, 4);
 
   return (
-    <div style={{ paddingBottom: "var(--spacing-2xl)" }}>
-      {/* 1. HERO SECTION: DINÂMICA (PRODUTOS HOT ESTILO IMAGEM 3 OU BANNER GRÁFICO REAL) */}
-      {isBannerMode && activeBanner ? (
-        // MODO BANNER GRÁFICO REAL
-        <section style={{ backgroundColor: "#090c10", borderBottom: "1px solid var(--border-subtle)" }}>
-          <div className="container" style={{ paddingTop: "2rem", paddingBottom: "2rem" }}>
-            <div
-              style={{
-                position: "relative",
-                width: "100%",
-                minHeight: "440px",
-                borderRadius: "var(--radius-xl)",
-                overflow: "hidden",
-                border: "1px solid var(--border-medium)",
-                display: "flex",
-                alignItems: "flex-end",
-                padding: "clamp(2rem, 5vw, 3.5rem)",
-                boxShadow: "var(--shadow-lg)",
-                backgroundColor: "#0d1017",
-              }}
-            >
-              <img
-                src={activeBanner.image_url}
-                alt={activeBanner.title}
-                style={{
-                  position: "absolute",
-                  inset: 0,
-                  width: "100%",
-                  height: "100%",
-                  objectFit: "cover",
-                }}
-              />
+    <div style={{ backgroundColor: "#f8fafc", minHeight: "100vh", paddingBottom: "4rem" }}>
+      {/* 1. HERO BANNER PRINCIPAL (ESTILO NOVATECH: CARD BRANCO/GRADIENTE CLARO COM IMAGEM DESTACADA) */}
+      <section style={{ padding: "2rem 0" }}>
+        <div className="container">
+          <div
+            style={{
+              backgroundColor: "#ffffff",
+              borderRadius: "24px",
+              padding: "clamp(2rem, 5vw, 4rem)",
+              display: "grid",
+              gridTemplateColumns: "repeat(auto-fit, minmax(320px, 1fr))",
+              alignItems: "center",
+              gap: "2.5rem",
+              boxShadow: "0 10px 25px -5px rgba(0, 0, 0, 0.04)",
+              border: "1px solid #e2e8f0",
+              position: "relative",
+              overflow: "hidden",
+            }}
+          >
+            {/* Texto de Apresentação Hero */}
+            <div style={{ maxWidth: "540px", zIndex: 2 }}>
               <div
                 style={{
-                  position: "absolute",
-                  inset: 0,
-                  background: "linear-gradient(to top, rgba(9, 11, 15, 0.95) 0%, rgba(9, 11, 15, 0.4) 60%, transparent 100%)",
+                  display: "inline-flex",
+                  alignItems: "center",
+                  gap: "0.5rem",
+                  backgroundColor: "#eef2ff",
+                  color: "#4f46e5",
+                  fontSize: "0.8125rem",
+                  fontWeight: 700,
+                  padding: "0.35rem 0.85rem",
+                  borderRadius: "9999px",
+                  marginBottom: "1rem",
                 }}
-              />
-
-              <div style={{ position: "relative", zIndex: 2, maxWidth: "600px" }}>
-                {activeBanner.tag && (
-                  <span
-                    style={{
-                      display: "inline-block",
-                      fontSize: "0.75rem",
-                      fontWeight: 800,
-                      letterSpacing: "0.15em",
-                      textTransform: "uppercase",
-                      color: "var(--color-primary)",
-                      backgroundColor: "rgba(255, 92, 0, 0.15)",
-                      border: "1px solid var(--color-primary)",
-                      padding: "0.3rem 0.8rem",
-                      borderRadius: "var(--radius-full)",
-                      marginBottom: "0.85rem",
-                    }}
-                  >
-                    {activeBanner.tag}
-                  </span>
-                )}
-                <h1
-                  style={{
-                    fontSize: "clamp(2rem, 4vw, 3.25rem)",
-                    fontWeight: 900,
-                    lineHeight: 1.1,
-                    letterSpacing: "-0.03em",
-                    color: "#ffffff",
-                    marginBottom: "0.75rem",
-                  }}
-                >
-                  {activeBanner.title}
-                </h1>
-                {activeBanner.subtitle && (
-                  <p style={{ fontSize: "1.0625rem", color: "var(--text-secondary)", marginBottom: "1.5rem", lineHeight: 1.5 }}>
-                    {activeBanner.subtitle}
-                  </p>
-                )}
-                {activeBanner.link_url && (
-                  <Link
-                    href={activeBanner.link_url}
-                    className="btn btn-primary"
-                    style={{
-                      padding: "0.85rem 2rem",
-                      fontSize: "0.9375rem",
-                      fontWeight: 700,
-                      borderRadius: "var(--radius-full)",
-                    }}
-                  >
-                    {activeBanner.button_text || "Conferir Agora &rarr;"}
-                  </Link>
-                )}
+              >
+                <span>🔥 Destaque em Produção</span>
               </div>
-            </div>
-          </div>
-        </section>
-      ) : hotProduct ? (
-        // MODO PRODUTOS HOT / MAIS VENDIDOS (INSPIRADO NA IMAGEM 3 - HYPECLT & TECH STREETWEAR)
-        <section
-          style={{
-            backgroundColor: "#0d1016",
-            borderBottom: "1px solid var(--border-subtle)",
-            background: "radial-gradient(ellipse at 80% 40%, rgba(255, 92, 0, 0.12), transparent 60%), #0d1016",
-          }}
-        >
-          <div className="container" style={{ paddingTop: "2.5rem", paddingBottom: "2.5rem" }}>
-            <div
-              style={{
-                display: "grid",
-                gridTemplateColumns: "repeat(auto-fit, minmax(320px, 1fr))",
-                gap: "2.5rem",
-                alignItems: "center",
-              }}
-            >
-              {/* Lado Esquerdo: Tipografia e Chamada Hot */}
-              <div>
-                <div
+
+              <h1
+                style={{
+                  fontSize: "clamp(2rem, 4vw, 3.25rem)",
+                  fontWeight: 900,
+                  color: "#0f172a",
+                  lineHeight: 1.15,
+                  letterSpacing: "-0.03em",
+                  marginBottom: "1rem",
+                }}
+              >
+                {hotProduct ? hotProduct.name : "Manufatura Aditiva & Action Figures sob Medida"}
+              </h1>
+
+              <p
+                style={{
+                  fontSize: "1rem",
+                  color: "#64748b",
+                  lineHeight: 1.6,
+                  marginBottom: "1.75rem",
+                }}
+              >
+                {hotProduct?.short_description
+                  ? hotProduct.short_description.slice(0, 140) + "..."
+                  : "Colecionáveis, miniaturas e peças de engenharia com acabamento profissional e precisão geométrica."}
+              </p>
+
+              <div style={{ display: "flex", alignItems: "center", gap: "1rem", flexWrap: "wrap" }}>
+                <Link
+                  href={hotProduct ? `/produtos/${hotProduct.slug}` : "/catalogo"}
                   style={{
+                    backgroundColor: "#4f46e5",
+                    color: "#ffffff",
+                    fontSize: "0.9375rem",
+                    fontWeight: 700,
+                    padding: "0.875rem 1.75rem",
+                    borderRadius: "12px",
+                    textDecoration: "none",
+                    boxShadow: "0 4px 12px rgba(79, 70, 229, 0.25)",
                     display: "inline-flex",
                     alignItems: "center",
                     gap: "0.5rem",
-                    padding: "0.35rem 0.85rem",
-                    borderRadius: "var(--radius-full)",
-                    backgroundColor: "rgba(255, 92, 0, 0.15)",
-                    border: "1px solid var(--color-primary)",
-                    color: "var(--color-primary)",
-                    fontSize: "0.75rem",
-                    fontWeight: 800,
-                    letterSpacing: "0.1em",
-                    textTransform: "uppercase",
-                    marginBottom: "1.25rem",
                   }}
                 >
-                  🔥 PRODUTO EM DESTAQUE // HOT DROP
-                </div>
+                  <span>Ver Detalhes</span>
+                  <svg width="18" height="18" viewBox="0 0 20 20" fill="currentColor">
+                    <path fillRule="evenodd" d="M10.293 3.293a1 1 0 011.414 0l6 6a1 1 0 010 1.414l-6 6a1 1 0 01-1.414-1.414L14.586 11H3a1 1 0 110-2h11.586l-4.293-4.293a1 1 0 010-1.414z" clipRule="evenodd" />
+                  </svg>
+                </Link>
 
-                <h1
-                  style={{
-                    fontSize: "clamp(2.25rem, 4.5vw, 3.5rem)",
-                    fontWeight: 900,
-                    lineHeight: 1.1,
-                    letterSpacing: "-0.03em",
-                    color: "#ffffff",
-                    marginBottom: "1rem",
-                  }}
-                >
-                  {hotProduct.name}
-                </h1>
-
-                <p
-                  style={{
-                    fontSize: "1.0625rem",
-                    color: "var(--text-secondary)",
-                    lineHeight: 1.6,
-                    marginBottom: "1.75rem",
-                    maxWidth: "520px",
-                  }}
-                >
-                  {hotProduct.short_description || "Manufatura aditiva de alta precisão com acabamento premium e preenchimento reforçado para máxima durabilidade."}
-                </p>
-
-                <div style={{ display: "flex", alignItems: "center", gap: "1.25rem", marginBottom: "2rem" }}>
-                  <div style={{ fontSize: "2rem", fontWeight: 900, color: "var(--color-primary)" }}>
-                    {new Intl.NumberFormat("pt-BR", { style: "currency", currency: "BRL" }).format(
-                      hotProduct.promotional_price && hotProduct.promotional_price > 0
-                        ? hotProduct.promotional_price
-                        : hotProduct.base_price
-                    )}
-                  </div>
-                  <span style={{ fontSize: "0.875rem", color: "var(--mode-in-stock)", fontWeight: 700 }}>
-                    ⚡ {hotProduct.commercial_mode === "in_stock" ? "Pronta Entrega" : "Sob Encomenda"}
-                  </span>
-                </div>
-
-                <div style={{ display: "flex", flexWrap: "wrap", gap: "1rem" }}>
-                  <Link
-                    href={`/produtos/${hotProduct.slug}`}
-                    className="btn btn-primary"
-                    style={{
-                      padding: "0.85rem 2rem",
-                      fontSize: "1rem",
-                      borderRadius: "var(--radius-full)",
-                      fontWeight: 800,
-                    }}
-                  >
-                    Comprar Agora &rarr;
-                  </Link>
-                  <Link
-                    href="/catalogo"
-                    className="btn btn-secondary"
-                    style={{
-                      padding: "0.85rem 1.75rem",
-                      fontSize: "1rem",
-                      borderRadius: "var(--radius-full)",
-                    }}
-                  >
-                    Ver Todo o Catálogo
-                  </Link>
-                </div>
-
-                {/* Miniaturas de outros itens HOT (estilo imagem 3) */}
-                {secondaryHotProducts.length > 0 && (
-                  <div style={{ marginTop: "2.5rem", borderTop: "1px solid var(--border-subtle)", paddingTop: "1.5rem" }}>
-                    <div style={{ fontSize: "0.75rem", fontWeight: 700, color: "var(--text-muted)", textTransform: "uppercase", letterSpacing: "0.05em", marginBottom: "0.75rem" }}>
-                      Mais Modelos em Alta:
-                    </div>
-                    <div style={{ display: "flex", gap: "0.75rem", flexWrap: "wrap" }}>
-                      {secondaryHotProducts.map((p) => {
-                        const img = p.images?.[0]?.image_url;
-                        return (
-                          <Link
-                            key={p.id}
-                            href={`/produtos/${p.slug}`}
-                            title={p.name}
-                            style={{
-                              width: "56px",
-                              height: "56px",
-                              borderRadius: "var(--radius-md)",
-                              backgroundColor: "var(--bg-surface)",
-                              border: "1px solid var(--border-medium)",
-                              overflow: "hidden",
-                              display: "flex",
-                              alignItems: "center",
-                              justifyContent: "center",
-                              transition: "transform var(--transition-fast), border-color var(--transition-fast)",
-                            }}
-                          >
-                            {img ? (
-                              <img src={img} alt={p.name} style={{ width: "100%", height: "100%", objectFit: "cover" }} />
-                            ) : (
-                              <span style={{ fontSize: "1.25rem" }}>📦</span>
-                            )}
-                          </Link>
-                        );
-                      })}
-                    </div>
+                {hotProduct && (
+                  <div style={{ fontSize: "1.5rem", fontWeight: 800, color: "#0f172a" }}>
+                    R$ {Number(hotProduct.base_price || 99).toFixed(2).replace(".", ",")}
                   </div>
                 )}
               </div>
+            </div>
 
-              {/* Lado Direito: Card Flutuante com Efeito Glassmorphism (Estilo Imagem 3) */}
-              <div style={{ display: "flex", justifyContent: "center" }}>
-                <div
-                  style={{
-                    width: "100%",
-                    maxWidth: "460px",
-                    borderRadius: "var(--radius-xl)",
-                    backgroundColor: "rgba(20, 24, 33, 0.75)",
-                    backdropFilter: "blur(20px)",
-                    border: "1px solid rgba(255, 255, 255, 0.12)",
-                    padding: "1.5rem",
-                    boxShadow: "0 20px 40px rgba(0, 0, 0, 0.5), 0 0 30px rgba(255, 92, 0, 0.15)",
-                  }}
-                >
-                  <div
-                    style={{
-                      position: "relative",
-                      width: "100%",
-                      paddingTop: "100%",
-                      borderRadius: "var(--radius-lg)",
-                      backgroundColor: "#080a0e",
-                      overflow: "hidden",
-                      marginBottom: "1.25rem",
-                    }}
-                  >
-                    {hotProduct.images?.[0]?.image_url ? (
-                      <img
-                        src={hotProduct.images[0].image_url}
-                        alt={hotProduct.name}
-                        style={{
-                          position: "absolute",
-                          inset: 0,
-                          width: "100%",
-                          height: "100%",
-                          objectFit: "cover",
-                        }}
-                      />
-                    ) : (
-                      <div style={{ position: "absolute", inset: 0, display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", color: "var(--text-muted)" }}>
-                        <span style={{ fontSize: "3rem", marginBottom: "0.5rem" }}>🦾</span>
-                        <span style={{ fontSize: "0.8125rem", fontWeight: 600 }}>KAVUNO 3D STUDIO</span>
-                      </div>
-                    )}
-                  </div>
-
-                  <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: "0.75rem" }}>
-                    <div>
-                      <span style={{ fontSize: "0.6875rem", fontWeight: 700, color: "var(--color-primary)", textTransform: "uppercase" }}>
-                        {hotProduct.category?.name || "Impressão 3D"}
-                      </span>
-                      <h3 style={{ fontSize: "1.125rem", fontWeight: 800, color: "#fff", marginTop: "0.15rem" }}>
-                        {hotProduct.name}
-                      </h3>
-                    </div>
-                    <span style={{ fontSize: "1.25rem", fontWeight: 900, color: "var(--color-primary)" }}>
-                      {new Intl.NumberFormat("pt-BR", { style: "currency", currency: "BRL" }).format(
-                        hotProduct.promotional_price && hotProduct.promotional_price > 0
-                          ? hotProduct.promotional_price
-                          : hotProduct.base_price
-                      )}
-                    </span>
-                  </div>
-
-                  <Link
-                    href={`/produtos/${hotProduct.slug}`}
-                    className="btn btn-primary"
-                    style={{
-                      width: "100%",
-                      padding: "0.75rem",
-                      borderRadius: "var(--radius-md)",
-                      fontWeight: 700,
-                    }}
-                  >
-                    + Ver Detalhes & Adicionar
-                  </Link>
-                </div>
-              </div>
+            {/* Imagem do Produto em Destaque Hero */}
+            <div style={{ display: "flex", justifyContent: "center", alignItems: "center", position: "relative" }}>
+              <div
+                style={{
+                  position: "absolute",
+                  width: "320px",
+                  height: "320px",
+                  borderRadius: "50%",
+                  background: "radial-gradient(circle, rgba(79, 70, 229, 0.12) 0%, transparent 70%)",
+                }}
+              />
+              <img
+                src={hotProduct?.images?.[0]?.image_url || "/logo.png"}
+                alt={hotProduct?.name || "Produto em Destaque"}
+                style={{
+                  maxWidth: "100%",
+                  maxHeight: "360px",
+                  objectFit: "contain",
+                  position: "relative",
+                  zIndex: 2,
+                  filter: "drop-shadow(0 20px 30px rgba(0, 0, 0, 0.12))",
+                }}
+              />
             </div>
           </div>
-        </section>
-      ) : (
-        // ESTADO VAZIO LIMPO E ELEGANTE QUANDO NÃO HÁ PRODUTOS CADASTRADOS NO BANCO
-        <section style={{ backgroundColor: "#090c10", borderBottom: "1px solid var(--border-subtle)", padding: "4rem 0" }}>
-          <div className="container" style={{ textAlign: "center", maxWidth: "600px" }}>
-            <h1 style={{ fontSize: "2rem", fontWeight: 900, marginBottom: "1rem" }}>
-              KAVUNO 3D &bull; Manufatura Aditiva
-            </h1>
-            <p style={{ fontSize: "1rem", color: "var(--text-secondary)", marginBottom: "1.5rem" }}>
-              Nenhum produto cadastrado no momento. Acesse o painel administrativo para cadastrar produtos reais ou banners.
-            </p>
-            <Link href="/admin-login" className="btn btn-primary">
-              Acessar Painel Administrativo
-            </Link>
-          </div>
-        </section>
-      )}
+        </div>
+      </section>
 
-      {/* 2. ESTRUTURA DE CATEGORIAS REAIS DO BANCO (SEM ÍCONES GENÉRICOS DE IA - ESTILO IMAGEM 4) */}
-      {categories.length > 0 && (
-        <div className="container" style={{ marginTop: "3rem" }}>
+      {/* 2. CATEGORIAS DE PRODUTOS (ESTILO NOVATECH: CARDS BRANCOS COM ÍCONES E CONTADOR) */}
+      <section style={{ padding: "1.5rem 0 2.5rem" }}>
+        <div className="container">
           <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-end", marginBottom: "1.25rem" }}>
             <div>
-              <span style={{ fontSize: "0.75rem", fontWeight: 700, color: "var(--color-primary)", textTransform: "uppercase", letterSpacing: "0.05em" }}>
-                DEPARTAMENTOS
+              <span style={{ fontSize: "0.8125rem", fontWeight: 700, color: "#4f46e5", textTransform: "uppercase" }}>
+                Categorias
               </span>
-              <h2 style={{ fontSize: "1.5rem", fontWeight: 800, color: "var(--text-primary)", marginTop: "0.25rem" }}>
-                Categorias em Foco
+              <h2 style={{ fontSize: "1.625rem", fontWeight: 800, color: "#0f172a", marginTop: "0.25rem" }}>
+                Navegar por Categoria
               </h2>
             </div>
-            <Link href="/catalogo" style={{ fontSize: "0.875rem", color: "var(--color-primary)", fontWeight: 700 }}>
-              Ver Catálogo Completo &rarr;
+            <Link href="/catalogo" style={{ fontSize: "0.875rem", color: "#4f46e5", fontWeight: 600, textDecoration: "none" }}>
+              Ver todas ({categories.length}) →
             </Link>
           </div>
 
           <div
             style={{
               display: "grid",
-              gridTemplateColumns: "repeat(auto-fit, minmax(220px, 1fr))",
-              gap: "1.25rem",
+              gridTemplateColumns: "repeat(auto-fit, minmax(140px, 1fr))",
+              gap: "1rem",
             }}
           >
             {categories.map((cat) => (
@@ -388,93 +170,177 @@ export default async function HomePage() {
                 key={cat.id}
                 href={`/catalogo?categoria=${cat.slug}`}
                 style={{
-                  padding: "1.25rem 1.5rem",
-                  backgroundColor: "var(--bg-surface)",
-                  border: "1px solid var(--border-subtle)",
-                  borderRadius: "var(--radius-lg)",
-                  transition: "all var(--transition-fast)",
-                  textDecoration: "none",
+                  backgroundColor: "#ffffff",
+                  border: "1px solid #e2e8f0",
+                  borderRadius: "16px",
+                  padding: "1.25rem 1rem",
                   display: "flex",
                   flexDirection: "column",
-                  justifyContent: "space-between",
-                  minHeight: "100px",
+                  alignItems: "center",
+                  textAlign: "center",
+                  textDecoration: "none",
+                  boxShadow: "0 2px 4px rgba(0, 0, 0, 0.02)",
+                  transition: "transform 0.15s ease, box-shadow 0.15s ease",
                 }}
               >
-                <div>
-                  <h3 style={{ fontSize: "1.125rem", fontWeight: 800, color: "var(--text-primary)", marginBottom: "0.25rem" }}>
-                    {cat.name}
-                  </h3>
-                  {cat.description && (
-                    <p style={{ fontSize: "0.8125rem", color: "var(--text-secondary)", lineHeight: 1.4 }}>
-                      {cat.description}
-                    </p>
-                  )}
+                <div
+                  style={{
+                    width: "48px",
+                    height: "48px",
+                    borderRadius: "12px",
+                    backgroundColor: "#f1f5f9",
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    fontSize: "1.5rem",
+                    marginBottom: "0.75rem",
+                  }}
+                >
+                  {cat.slug.includes("action") ? "🦸" : cat.slug.includes("geek") ? "👾" : cat.slug.includes("setup") ? "🖥️" : "⚙️"}
                 </div>
-                <div style={{ marginTop: "1rem", fontSize: "0.75rem", color: "var(--color-primary)", fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.05em" }}>
-                  Explorar Itens &rarr;
-                </div>
+                <span style={{ fontSize: "0.875rem", fontWeight: 700, color: "#0f172a" }}>
+                  {cat.name}
+                </span>
+                <span style={{ fontSize: "0.75rem", color: "#64748b", marginTop: "0.25rem" }}>
+                  Explorar
+                </span>
               </Link>
             ))}
           </div>
         </div>
+      </section>
+
+      {/* 3. BANNER HORIZONTAL SECUNDÁRIO DE PRODUTOS HOT (ESTILO IMAGEM ANEXADA) */}
+      {secondaryHotProducts.length > 0 && (
+        <section style={{ padding: "1.5rem 0 2.5rem" }}>
+          <div className="container">
+            <div
+              style={{
+                backgroundColor: "#e0e7ff",
+                borderRadius: "20px",
+                padding: "2rem",
+                display: "grid",
+                gridTemplateColumns: "repeat(auto-fit, minmax(280px, 1fr))",
+                alignItems: "center",
+                gap: "2rem",
+                position: "relative",
+                overflow: "hidden",
+              }}
+            >
+              <div>
+                <span
+                  style={{
+                    fontSize: "0.75rem",
+                    fontWeight: 800,
+                    textTransform: "uppercase",
+                    backgroundColor: "#4f46e5",
+                    color: "#ffffff",
+                    padding: "0.25rem 0.6rem",
+                    borderRadius: "6px",
+                  }}
+                >
+                  Oferta Especial
+                </span>
+                <h3 style={{ fontSize: "1.75rem", fontWeight: 800, color: "#1e1b4b", margin: "0.75rem 0" }}>
+                  Colecionáveis Exclusivos & Lotes Abertos
+                </h3>
+                <p style={{ fontSize: "0.9375rem", color: "#4338ca", maxWidth: "400px", lineHeight: 1.5 }}>
+                  Modelos de alta resolução impressos em filamentos premium com tolerância mecânica rigorosa.
+                </p>
+                <div style={{ marginTop: "1.25rem" }}>
+                  <Link
+                    href="/catalogo"
+                    style={{
+                      backgroundColor: "#4f46e5",
+                      color: "#ffffff",
+                      fontSize: "0.875rem",
+                      fontWeight: 700,
+                      padding: "0.65rem 1.25rem",
+                      borderRadius: "8px",
+                      textDecoration: "none",
+                      display: "inline-block",
+                    }}
+                  >
+                    Aproveitar Lotes
+                  </Link>
+                </div>
+              </div>
+
+              {/* Lista Horizontal de Produtos Hot */}
+              <div style={{ display: "flex", gap: "1rem", overflowX: "auto", paddingBottom: "0.5rem" }}>
+                {secondaryHotProducts.map((p) => (
+                  <Link
+                    key={p.id}
+                    href={`/produtos/${p.slug}`}
+                    style={{
+                      backgroundColor: "#ffffff",
+                      borderRadius: "14px",
+                      padding: "1rem",
+                      minWidth: "160px",
+                      maxWidth: "180px",
+                      textDecoration: "none",
+                      boxShadow: "0 4px 6px rgba(0, 0, 0, 0.05)",
+                      display: "flex",
+                      flexDirection: "column",
+                      alignItems: "center",
+                      textAlign: "center",
+                      flexShrink: 0,
+                    }}
+                  >
+                    <img
+                      src={p.images?.[0]?.image_url || "/logo.png"}
+                      alt={p.name}
+                      style={{ height: "100px", width: "100%", objectFit: "contain", marginBottom: "0.5rem" }}
+                    />
+                    <div style={{ fontSize: "0.8125rem", fontWeight: 700, color: "#0f172a", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis", width: "100%" }}>
+                      {p.name}
+                    </div>
+                    <div style={{ fontSize: "0.875rem", fontWeight: 800, color: "#4f46e5", marginTop: "0.25rem" }}>
+                      R$ {Number(p.base_price || 89).toFixed(2).replace(".", ",")}
+                    </div>
+                  </Link>
+                ))}
+              </div>
+            </div>
+          </div>
+        </section>
       )}
 
-      {/* 3. VITRINE DE PRODUTOS REAIS (ESTILO IMAGEM 4 - GRID MODERNO E LIMPO) */}
-      <div className="container" style={{ marginTop: "3.5rem" }}>
-        <div
-          style={{
-            display: "flex",
-            justifyContent: "space-between",
-            alignItems: "flex-end",
-            marginBottom: "1.5rem",
-          }}
-        >
-          <div>
-            <span style={{ fontSize: "0.75rem", fontWeight: 700, color: "var(--color-primary)", textTransform: "uppercase", letterSpacing: "0.05em" }}>
-              CATÁLOGO DE LANÇAMENTOS
-            </span>
-            <h2 style={{ fontSize: "1.75rem", fontWeight: 800, color: "var(--text-primary)", marginTop: "0.25rem" }}>
-              Modelos Recentes da Impressora 3D
-            </h2>
-          </div>
-          <Link
-            href="/catalogo"
-            style={{
-              fontSize: "0.875rem",
-              color: "var(--color-primary)",
-              fontWeight: 700,
-              textDecoration: "none",
-            }}
-          >
-            Ver Todos ({products.length}) &rarr;
-          </Link>
-        </div>
-
-        {products.length === 0 ? (
-          <div
-            style={{
-              padding: "4rem 2rem",
-              textAlign: "center",
-              backgroundColor: "var(--bg-surface)",
-              border: "1px dashed var(--border-medium)",
-              borderRadius: "var(--radius-xl)",
-            }}
-          >
-            <h3 style={{ fontSize: "1.25rem", fontWeight: 800, color: "var(--text-primary)", marginBottom: "0.5rem" }}>
-              Nenhum produto ativo cadastrado no momento.
-            </h3>
-            <p style={{ fontSize: "0.875rem", color: "var(--text-secondary)", maxWidth: "460px", margin: "0 auto 1.5rem" }}>
-              Cadastre suas peças 3D reais no painel de administração para exibi-las aqui na vitrine.
-            </p>
-            <Link href="/admin/produtos/novo" className="btn btn-primary">
-              + Cadastrar Produto no Admin
+      {/* 4. GRADE DE PRODUTOS REAIS (MAIS VENDIDOS / EXPLORE NOSSO CATÁLOGO) */}
+      <section style={{ padding: "1.5rem 0" }}>
+        <div className="container">
+          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-end", marginBottom: "1.5rem" }}>
+            <div>
+              <span style={{ fontSize: "0.8125rem", fontWeight: 700, color: "#4f46e5", textTransform: "uppercase" }}>
+                Coleção Completa
+              </span>
+              <h2 style={{ fontSize: "1.625rem", fontWeight: 800, color: "#0f172a", marginTop: "0.25rem" }}>
+                Modelos Disponíveis
+              </h2>
+            </div>
+            <Link
+              href="/catalogo"
+              style={{
+                fontSize: "0.875rem",
+                fontWeight: 600,
+                color: "#4f46e5",
+                textDecoration: "none",
+                display: "inline-flex",
+                alignItems: "center",
+                gap: "0.25rem",
+              }}
+            >
+              <span>Ver todos os produtos</span>
+              <svg width="16" height="16" viewBox="0 0 20 20" fill="currentColor">
+                <path fillRule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clipRule="evenodd" />
+              </svg>
             </Link>
           </div>
-        ) : (
+
           <div
             style={{
               display: "grid",
-              gridTemplateColumns: "repeat(auto-fill, minmax(260px, 1fr))",
+              gridTemplateColumns: "repeat(auto-fill, minmax(240px, 1fr))",
               gap: "1.5rem",
             }}
           >
@@ -482,95 +348,53 @@ export default async function HomePage() {
               <ProductCard key={product.id} product={product} />
             ))}
           </div>
-        )}
+        </div>
+      </section>
 
-        {/* 4. GARANTIAS & BENEFÍCIOS REFORMULADOS (SEM ÍCONES DE IA - ESTILO BRANDING PREMIUM) */}
-        <section
-          style={{
-            display: "grid",
-            gridTemplateColumns: "repeat(auto-fit, minmax(240px, 1fr))",
-            gap: "1.5rem",
-            marginTop: "4rem",
-            marginBottom: "2rem",
-          }}
-        >
+      {/* 5. VANTAGENS E BENEFÍCIOS DO E-COMMERCE NO RODAPÉ */}
+      <section style={{ marginTop: "3rem", borderTop: "1px solid #e2e8f0", backgroundColor: "#ffffff", padding: "2.5rem 0" }}>
+        <div className="container">
           <div
             style={{
-              padding: "1.5rem",
-              backgroundColor: "var(--bg-surface)",
-              border: "1px solid var(--border-subtle)",
-              borderRadius: "var(--radius-lg)",
+              display: "grid",
+              gridTemplateColumns: "repeat(auto-fit, minmax(220px, 1fr))",
+              gap: "2rem",
             }}
           >
-            <div style={{ fontSize: "0.75rem", fontWeight: 800, color: "var(--color-primary)", textTransform: "uppercase", letterSpacing: "0.05em", marginBottom: "0.5rem" }}>
-              LOGÍSTICA NACIONAL
+            <div style={{ display: "flex", alignItems: "center", gap: "1rem" }}>
+              <div style={{ fontSize: "2rem", color: "#4f46e5" }}>🚚</div>
+              <div>
+                <div style={{ fontWeight: 700, color: "#0f172a", fontSize: "0.9375rem" }}>Frete Seguro</div>
+                <div style={{ fontSize: "0.8125rem", color: "#64748b" }}>Envio rastreado para todo o Brasil</div>
+              </div>
             </div>
-            <div style={{ fontWeight: 800, fontSize: "1rem", color: "var(--text-primary)", marginBottom: "0.35rem" }}>
-              Envio Rápido & Seguro
-            </div>
-            <div style={{ fontSize: "0.8125rem", color: "var(--text-secondary)", lineHeight: 1.5 }}>
-              Rastreamento direto com envio ágil para compras a pronta entrega.
-            </div>
-          </div>
 
-          <div
-            style={{
-              padding: "1.5rem",
-              backgroundColor: "var(--bg-surface)",
-              border: "1px solid var(--border-subtle)",
-              borderRadius: "var(--radius-lg)",
-            }}
-          >
-            <div style={{ fontSize: "0.75rem", fontWeight: 800, color: "var(--color-primary)", textTransform: "uppercase", letterSpacing: "0.05em", marginBottom: "0.5rem" }}>
-              ENGENHARIA 3D
+            <div style={{ display: "flex", alignItems: "center", gap: "1rem" }}>
+              <div style={{ fontSize: "2rem", color: "#4f46e5" }}>⚙️</div>
+              <div>
+                <div style={{ fontWeight: 700, color: "#0f172a", fontSize: "0.9375rem" }}>Precisão Geométrica</div>
+                <div style={{ fontSize: "0.8125rem", color: "#64748b" }}>Camadas de 0.12mm a 0.20mm</div>
+              </div>
             </div>
-            <div style={{ fontWeight: 800, fontSize: "1rem", color: "var(--text-primary)", marginBottom: "0.35rem" }}>
-              Precisão Dimensional
-            </div>
-            <div style={{ fontSize: "0.8125rem", color: "var(--text-secondary)", lineHeight: 1.5 }}>
-              Camadas de 0.12mm a 0.20mm com inspeção visual antes de qualquer envio.
-            </div>
-          </div>
 
-          <div
-            style={{
-              padding: "1.5rem",
-              backgroundColor: "var(--bg-surface)",
-              border: "1px solid var(--border-subtle)",
-              borderRadius: "var(--radius-lg)",
-            }}
-          >
-            <div style={{ fontSize: "0.75rem", fontWeight: 800, color: "var(--color-primary)", textTransform: "uppercase", letterSpacing: "0.05em", marginBottom: "0.5rem" }}>
-              COMPRA PROTEGIDA
+            <div style={{ display: "flex", alignItems: "center", gap: "1rem" }}>
+              <div style={{ fontSize: "2rem", color: "#4f46e5" }}>🔒</div>
+              <div>
+                <div style={{ fontWeight: 700, color: "#0f172a", fontSize: "0.9375rem" }}>Pagamento Protegido</div>
+                <div style={{ fontSize: "0.8125rem", color: "#64748b" }}>Mercado Pago via PIX e Cartão</div>
+              </div>
             </div>
-            <div style={{ fontWeight: 800, fontSize: "1rem", color: "var(--text-primary)", marginBottom: "0.35rem" }}>
-              Garantia KAVUNO
-            </div>
-            <div style={{ fontSize: "0.8125rem", color: "var(--text-secondary)", lineHeight: 1.5 }}>
-              Compromisso de troca ou estorno em caso de avaria no transporte.
-            </div>
-          </div>
 
-          <div
-            style={{
-              padding: "1.5rem",
-              backgroundColor: "var(--bg-surface)",
-              border: "1px solid var(--border-subtle)",
-              borderRadius: "var(--radius-lg)",
-            }}
-          >
-            <div style={{ fontSize: "0.75rem", fontWeight: 800, color: "var(--color-primary)", textTransform: "uppercase", letterSpacing: "0.05em", marginBottom: "0.5rem" }}>
-              CHECKOUT BLINDADO
-            </div>
-            <div style={{ fontWeight: 800, fontSize: "1rem", color: "var(--text-primary)", marginBottom: "0.35rem" }}>
-              Mercado Pago Integrado
-            </div>
-            <div style={{ fontSize: "0.8125rem", color: "var(--text-secondary)", lineHeight: 1.5 }}>
-              PIX com aprovação imediata e cartões de crédito em até 12 parcelas.
+            <div style={{ display: "flex", alignItems: "center", gap: "1rem" }}>
+              <div style={{ fontSize: "2rem", color: "#4f46e5" }}>💬</div>
+              <div>
+                <div style={{ fontWeight: 700, color: "#0f172a", fontSize: "0.9375rem" }}>Suporte Especializado</div>
+                <div style={{ fontSize: "0.8125rem", color: "#64748b" }}>Atendimento técnico dedicado</div>
+              </div>
             </div>
           </div>
-        </section>
-      </div>
+        </div>
+      </section>
     </div>
   );
 }

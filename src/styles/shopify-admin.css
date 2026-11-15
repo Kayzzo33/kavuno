@@ -1,10 +1,10 @@
 /* ==========================================================================
-   SHOPIFY-INSPIRED ADMIN THEME FOR KAVUNO 3D
-   Cores, tipografia e componentes baseados no design do Shopify Admin
+   SHOPIFY & NUVEMSHOP ADMIN THEME FOR KAVUNO 3D
+   Cores claras, legibilidade impecável e contraste 100% perfeito
    ========================================================================== */
 
 :root {
-  /* Paleta Shopify Admin */
+  /* Sidebar Escura Elegante (Shopify / Nuvemshop) */
   --shopify-bg-nav: #1a1a1a;
   --shopify-bg-nav-hover: #262626;
   --shopify-bg-nav-active: #303030;
@@ -15,19 +15,19 @@
   --shopify-brand-green-hover: #006e52;
   --shopify-brand-green-subtle: #f1f8f5;
 
-  /* Canvas do Conteúdo Principal (Shopify Light Gray) */
-  --shopify-canvas: #f1f2f4;
+  /* Canvas do Conteúdo Principal (Shopify Light Canvas) */
+  --shopify-canvas: #f6f6f7;
   --shopify-surface: #ffffff;
   --shopify-border: #e1e3e5;
   --shopify-border-subtle: #ebeeed;
   --shopify-border-dark: #c9cccf;
 
-  /* Textos Principais */
+  /* Textos Principais com Alto Contraste */
   --shopify-text-primary: #202223;
   --shopify-text-secondary: #6d7175;
   --shopify-text-disabled: #8c9196;
 
-  /* Destaques e Badges */
+  /* Badges e Tags */
   --shopify-badge-info-bg: #e4f4fb;
   --shopify-badge-info-text: #005a7e;
   --shopify-badge-success-bg: #eafbf1;
@@ -39,7 +39,6 @@
 
   /* Sombras */
   --shopify-shadow-card: 0 1px 3px 0 rgba(0, 0, 0, 0.05), 0 1px 2px -1px rgba(0, 0, 0, 0.05);
-  --shopify-shadow-popover: 0 4px 12px 0 rgba(0, 0, 0, 0.12);
 }
 
 .shopify-admin-wrapper {
@@ -50,21 +49,32 @@
 }
 
 .shopify-card {
-  background-color: var(--shopify-surface);
-  border: 1px solid var(--shopify-border);
-  border-radius: 12px;
-  box-shadow: var(--shopify-shadow-card);
+  background-color: #ffffff !important;
+  color: #202223 !important;
+  border: 1px solid #e1e3e5 !important;
+  border-radius: 12px !important;
+  box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.05) !important;
   padding: 1.25rem;
-  transition: border-color 0.15s ease, box-shadow 0.15s ease;
 }
 
-.shopify-card:hover {
-  border-color: var(--shopify-border-dark);
+.shopify-card h1,
+.shopify-card h2,
+.shopify-card h3,
+.shopify-card h4,
+.shopify-card h5,
+.shopify-card h6 {
+  color: #202223 !important;
+}
+
+.shopify-card p,
+.shopify-card span,
+.shopify-card td {
+  color: #202223;
 }
 
 .shopify-btn-primary {
-  background-color: #202223;
-  color: #ffffff;
+  background-color: #008060 !important;
+  color: #ffffff !important;
   font-size: 0.8125rem;
   font-weight: 600;
   padding: 0.5rem 0.875rem;
@@ -79,18 +89,18 @@
 }
 
 .shopify-btn-primary:hover {
-  background-color: #000000;
-  color: #ffffff;
+  background-color: #006e52 !important;
+  color: #ffffff !important;
 }
 
 .shopify-btn-secondary {
-  background-color: #ffffff;
-  color: var(--shopify-text-primary);
+  background-color: #ffffff !important;
+  color: #202223 !important;
   font-size: 0.8125rem;
-  font-weight: 500;
+  font-weight: 600;
   padding: 0.5rem 0.875rem;
   border-radius: 8px;
-  border: 1px solid var(--shopify-border);
+  border: 1px solid #c9cccf !important;
   cursor: pointer;
   display: inline-flex;
   align-items: center;
@@ -100,7 +110,6 @@
 }
 
 .shopify-btn-secondary:hover {
-  background-color: #f7f7f8;
-  border-color: var(--shopify-border-dark);
+  background-color: #f7f7f8 !important;
+  border-color: #a6acb2 !important;
 }
-
