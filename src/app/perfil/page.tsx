@@ -31,8 +31,12 @@ export default async function ProfilePage() {
     .single();
 
   const profile = rawProfile as import("@/types/database.types").Database["public"]["Tables"]["profiles"]["Row"] | null;
-
   const isAdmin = profile?.role === "admin";
+
+  // Se for administrador, redireciona diretamente para o painel /admin
+  if (isAdmin) {
+    redirect("/admin");
+  }
 
   return (
     <div style={{ paddingTop: "var(--spacing-2xl)", paddingBottom: "var(--spacing-2xl)" }}>

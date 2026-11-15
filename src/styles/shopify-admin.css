@@ -1,0 +1,106 @@
+/* ==========================================================================
+   SHOPIFY-INSPIRED ADMIN THEME FOR KAVUNO 3D
+   Cores, tipografia e componentes baseados no design do Shopify Admin
+   ========================================================================== */
+
+:root {
+  /* Paleta Shopify Admin */
+  --shopify-bg-nav: #1a1a1a;
+  --shopify-bg-nav-hover: #262626;
+  --shopify-bg-nav-active: #303030;
+  --shopify-text-nav: #e3e3e3;
+  --shopify-text-nav-muted: #8c8c8c;
+  --shopify-text-nav-subtle: #616161;
+  --shopify-brand-green: #008060;
+  --shopify-brand-green-hover: #006e52;
+  --shopify-brand-green-subtle: #f1f8f5;
+
+  /* Canvas do Conteúdo Principal (Shopify Light Gray) */
+  --shopify-canvas: #f1f2f4;
+  --shopify-surface: #ffffff;
+  --shopify-border: #e1e3e5;
+  --shopify-border-subtle: #ebeeed;
+  --shopify-border-dark: #c9cccf;
+
+  /* Textos Principais */
+  --shopify-text-primary: #202223;
+  --shopify-text-secondary: #6d7175;
+  --shopify-text-disabled: #8c9196;
+
+  /* Destaques e Badges */
+  --shopify-badge-info-bg: #e4f4fb;
+  --shopify-badge-info-text: #005a7e;
+  --shopify-badge-success-bg: #eafbf1;
+  --shopify-badge-success-text: #0e623b;
+  --shopify-badge-warning-bg: #fff8e5;
+  --shopify-badge-warning-text: #8c5800;
+  --shopify-badge-attention-bg: #ffe0db;
+  --shopify-badge-attention-text: #991c0e;
+
+  /* Sombras */
+  --shopify-shadow-card: 0 1px 3px 0 rgba(0, 0, 0, 0.05), 0 1px 2px -1px rgba(0, 0, 0, 0.05);
+  --shopify-shadow-popover: 0 4px 12px 0 rgba(0, 0, 0, 0.12);
+}
+
+.shopify-admin-wrapper {
+  background-color: var(--shopify-canvas);
+  color: var(--shopify-text-primary);
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  min-height: 100vh;
+}
+
+.shopify-card {
+  background-color: var(--shopify-surface);
+  border: 1px solid var(--shopify-border);
+  border-radius: 12px;
+  box-shadow: var(--shopify-shadow-card);
+  padding: 1.25rem;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+.shopify-card:hover {
+  border-color: var(--shopify-border-dark);
+}
+
+.shopify-btn-primary {
+  background-color: #202223;
+  color: #ffffff;
+  font-size: 0.8125rem;
+  font-weight: 600;
+  padding: 0.5rem 0.875rem;
+  border-radius: 8px;
+  border: 1px solid transparent;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.375rem;
+  text-decoration: none;
+  transition: all 0.15s ease;
+}
+
+.shopify-btn-primary:hover {
+  background-color: #000000;
+  color: #ffffff;
+}
+
+.shopify-btn-secondary {
+  background-color: #ffffff;
+  color: var(--shopify-text-primary);
+  font-size: 0.8125rem;
+  font-weight: 500;
+  padding: 0.5rem 0.875rem;
+  border-radius: 8px;
+  border: 1px solid var(--shopify-border);
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.375rem;
+  text-decoration: none;
+  transition: all 0.15s ease;
+}
+
+.shopify-btn-secondary:hover {
+  background-color: #f7f7f8;
+  border-color: var(--shopify-border-dark);
+}
+

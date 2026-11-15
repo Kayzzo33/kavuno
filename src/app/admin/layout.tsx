@@ -4,6 +4,7 @@ import { headers } from "next/headers";
 import { requireAdminSession } from "@/lib/admin/queries";
 import { AdminSidebar } from "@/components/admin/AdminSidebar";
 import { AdminHeader } from "@/components/admin/AdminHeader";
+import "@/styles/shopify-admin.css";
 
 export default async function AdminLayout({
   children,
@@ -26,20 +27,24 @@ export default async function AdminLayout({
 
   return (
     <div
+      className="shopify-admin-wrapper"
       style={{
         display: "flex",
         minHeight: "100vh",
-        backgroundColor: "var(--bg-canvas)",
+        backgroundColor: "var(--shopify-canvas, #f1f2f4)",
       }}
     >
       <AdminSidebar />
-      <div style={{ flex: 1, display: "flex", flexDirection: "column", overflow: "hidden" }}>
+      <div style={{ flex: 1, display: "flex", flexDirection: "column", minWidth: 0, overflow: "hidden" }}>
         <AdminHeader />
         <main
           style={{
             flex: 1,
-            padding: "var(--spacing-xl)",
+            padding: "2rem",
             overflowY: "auto",
+            maxWidth: "1280px",
+            width: "100%",
+            margin: "0 auto",
           }}
         >
           {children}

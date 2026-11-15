@@ -11,6 +11,19 @@ export async function GET(request: NextRequest) {
     const { error } = await supabase.auth.exchangeCodeForSession(code);
 
     if (!error) {
+      // Se for admin, direciona para o painel /admin em vez de perfil
+      const { data: { user } } = await supabase.auth.getUser();
+      if (user) {
+        const { data: profile } = await (supabase.from("profiles") as any)
+          .select("role")
+          .eq("id", user.id)
+          .single();
+
+        if (profile?.role === "admin") {
+          return NextResponse.redirect(new URL("/admin", request.url));
+        }
+      }
+
       return NextResponse.redirect(new URL(next, request.url));
     }
   }

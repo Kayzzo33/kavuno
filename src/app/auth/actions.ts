@@ -84,7 +84,7 @@ export async function signInAction(
 
   const supabase = await createClient();
 
-  const { error } = await supabase.auth.signInWithPassword({
+  const { data: authData, error } = await supabase.auth.signInWithPassword({
     email,
     password,
   });
@@ -100,6 +100,20 @@ export async function signInAction(
       };
     }
     return { success: false, error: error.message };
+  }
+
+  // Se o usuário for administrador, redireciona diretamente para o painel /admin
+  if (authData.user) {
+    const { data: profile } = await (supabase.from("profiles") as any)
+      .select("role")
+      .eq("id", authData.user.id)
+      .single();
+
+    if (profile?.role === "admin") {
+      revalidatePath("/", "layout");
+      revalidatePath("/admin", "layout");
+      redirect("/admin");
+    }
   }
 
   revalidatePath("/", "layout");
