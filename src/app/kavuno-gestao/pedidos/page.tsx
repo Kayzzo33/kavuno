@@ -1,4 +1,4 @@
-﻿import React from "react";
+import React from "react";
 import type { Metadata } from "next";
 import Link from "next/link";
 import { requireAdminSession } from "@/lib/admin/queries";

@@ -1,4 +1,4 @@
-﻿"use client";
+"use client";
 
 import React, { useActionState, useTransition, useState, useRef } from "react";
 import type { SiteSettingsData, SiteBannerItem } from "@/lib/catalog/queries";

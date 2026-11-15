@@ -1,4 +1,4 @@
-﻿import React from "react";
+import React from "react";
 import type { Metadata } from "next";
 import { getSiteSettings, getAllSiteBanners } from "@/lib/catalog/queries";
 import { BannerManagerClient } from "@/components/admin/BannerManagerClient";

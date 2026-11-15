@@ -1,4 +1,4 @@
-﻿import React from "react";
+import React from "react";
 import { requireAdminSession } from "@/lib/admin/queries";
 import {
   getFinancialDashboardMetrics,
