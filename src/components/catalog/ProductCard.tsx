@@ -29,20 +29,49 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
     : null;
 
   const installmentValue = (displayPrice / 3).toFixed(2).replace(".", ",");
-
   const isProntaEntrega = product.commercial_mode === "in_stock";
 
   return (
-    <div className="product-card-modern">
-      {/* Container de Imagem com Aspect Ratio Quadrado */}
+    <div
+      style={{
+        backgroundColor: "#ffffff",
+        border: "1px solid #e2e8f0",
+        borderRadius: "16px",
+        overflow: "hidden",
+        display: "flex",
+        flexDirection: "column",
+        boxShadow: "0 2px 4px rgba(0, 0, 0, 0.02)",
+        transition: "transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease",
+        position: "relative",
+      }}
+      onMouseEnter={(e) => {
+        e.currentTarget.style.transform = "translateY(-4px)";
+        e.currentTarget.style.boxShadow = "0 10px 20px rgba(0, 0, 0, 0.06)";
+        e.currentTarget.style.borderColor = "#cbd5e1";
+      }}
+      onMouseLeave={(e) => {
+        e.currentTarget.style.transform = "translateY(0)";
+        e.currentTarget.style.boxShadow = "0 2px 4px rgba(0, 0, 0, 0.02)";
+        e.currentTarget.style.borderColor = "#e2e8f0";
+      }}
+    >
+      {/* Imagem do Produto com Fundo Claro e Limpo */}
       <Link href={`/produtos/${product.slug}`} style={{ textDecoration: "none" }}>
-        <div className="product-image-container">
+        <div
+          style={{
+            position: "relative",
+            width: "100%",
+            paddingTop: "100%", // Quadrado 1:1
+            backgroundColor: "#f8fafc",
+            overflow: "hidden",
+          }}
+        >
           {primaryImage?.image_url ? (
             <Image
               src={primaryImage.image_url}
               alt={primaryImage.alt_text || product.name}
               fill
-              sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+              sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 25vw"
               style={{ objectFit: "cover" }}
             />
           ) : (
@@ -54,40 +83,45 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
                 flexDirection: "column",
                 alignItems: "center",
                 justifyContent: "center",
-                background: "linear-gradient(135deg, #131720 0%, #1c2230 100%)",
-                gap: "0.5rem",
-                color: "var(--text-muted)",
+                backgroundColor: "#f1f5f9",
+                color: "#64748b",
               }}
             >
-              <div
-                style={{
-                  width: "56px",
-                  height: "56px",
-                  borderRadius: "var(--radius-full)",
-                  backgroundColor: "rgba(255, 92, 0, 0.1)",
-                  border: "1px solid rgba(255, 92, 0, 0.2)",
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "center",
-                  fontSize: "1.75rem",
-                }}
-              >
-                🦾
-              </div>
-              <span style={{ fontSize: "0.75rem", fontWeight: 600, color: "var(--text-secondary)" }}>
-                Peça 3D de Alta Resolução
-              </span>
+              <div style={{ fontSize: "2rem", marginBottom: "0.25rem" }}>🦾</div>
+              <span style={{ fontSize: "0.75rem", fontWeight: 600 }}>Peça 3D Exclusiva</span>
             </div>
           )}
 
           {/* Badge Comercial (Pronta Entrega / Sob Encomenda) */}
           <div style={{ position: "absolute", top: "0.75rem", left: "0.75rem", zIndex: 2 }}>
             {isProntaEntrega ? (
-              <span className="badge-commercial badge-in-stock-pill">
+              <span
+                style={{
+                  backgroundColor: "#ecfdf5",
+                  color: "#059669",
+                  border: "1px solid #a7f3d0",
+                  fontSize: "0.6875rem",
+                  fontWeight: 700,
+                  padding: "0.25rem 0.55rem",
+                  borderRadius: "9999px",
+                  textTransform: "uppercase",
+                }}
+              >
                 ⚡ Pronta Entrega
               </span>
             ) : (
-              <span className="badge-commercial badge-pre-order-pill">
+              <span
+                style={{
+                  backgroundColor: "#f8fafc",
+                  color: "#475569",
+                  border: "1px solid #cbd5e1",
+                  fontSize: "0.6875rem",
+                  fontWeight: 700,
+                  padding: "0.25rem 0.55rem",
+                  borderRadius: "9999px",
+                  textTransform: "uppercase",
+                }}
+              >
                 Sob Encomenda
               </span>
             )}
@@ -100,10 +134,10 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
                 position: "absolute",
                 top: "0.75rem",
                 right: "0.75rem",
-                backgroundColor: "var(--color-primary)",
+                backgroundColor: "#4f46e5",
                 color: "#ffffff",
                 padding: "0.2rem 0.5rem",
-                borderRadius: "var(--radius-sm)",
+                borderRadius: "6px",
                 fontSize: "0.6875rem",
                 fontWeight: 800,
                 zIndex: 2,
@@ -116,7 +150,7 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
       </Link>
 
       {/* Conteúdo do Card */}
-      <div style={{ padding: "1rem", display: "flex", flexDirection: "column", flex: 1 }}>
+      <div style={{ padding: "1.25rem 1rem", display: "flex", flexDirection: "column", flex: 1, backgroundColor: "#ffffff" }}>
         {/* Categoria */}
         {product.category && (
           <span
@@ -125,7 +159,7 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
               fontWeight: 700,
               textTransform: "uppercase",
               letterSpacing: "0.05em",
-              color: "var(--color-primary)",
+              color: "#4f46e5",
               marginBottom: "0.35rem",
             }}
           >
@@ -140,7 +174,7 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
             fontWeight: 700,
             lineHeight: 1.35,
             marginBottom: "0.5rem",
-            color: "var(--text-primary)",
+            color: "#0f172a",
             display: "-webkit-box",
             WebkitLineClamp: 2,
             WebkitBoxOrient: "vertical",
@@ -156,10 +190,10 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
           </Link>
         </h3>
 
-        {/* Avaliação em Estrelas (Estilo Mercado Livre / Stuffus) */}
+        {/* Avaliação em Estrelas */}
         <div style={{ display: "flex", alignItems: "center", gap: "0.35rem", marginBottom: "0.75rem" }}>
-          <span style={{ color: "#fbbf24", fontSize: "0.875rem" }}>★★★★★</span>
-          <span style={{ fontSize: "0.75rem", color: "var(--text-muted)", fontWeight: 500 }}>
+          <span style={{ color: "#f59e0b", fontSize: "0.875rem" }}>★★★★★</span>
+          <span style={{ fontSize: "0.75rem", color: "#64748b", fontWeight: 500 }}>
             5.0 (24)
           </span>
         </div>
@@ -170,7 +204,7 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
             <span
               style={{
                 fontSize: "0.75rem",
-                color: "var(--text-muted)",
+                color: "#94a3b8",
                 textDecoration: "line-through",
                 display: "block",
                 lineHeight: 1,
@@ -184,30 +218,39 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
             style={{
               fontSize: "1.375rem",
               fontWeight: 800,
-              color: "var(--text-primary)",
+              color: "#0f172a",
               lineHeight: 1.15,
             }}
           >
             {formattedPrice}
           </div>
 
-          <span style={{ fontSize: "0.75rem", color: "var(--mode-in-stock)", display: "block", marginTop: "0.2rem" }}>
+          <span style={{ fontSize: "0.75rem", color: "#059669", display: "block", marginTop: "0.2rem", fontWeight: 500 }}>
             em até 3x de R$ {installmentValue} sem juros
           </span>
         </div>
 
-        {/* Botão de Ação */}
-        <div style={{ marginTop: "0.875rem" }}>
+        {/* Botão de Ação Azul Padrão */}
+        <div style={{ marginTop: "1rem" }}>
           <Link
             href={`/produtos/${product.slug}`}
-            className="btn btn-primary"
             style={{
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
               width: "100%",
-              padding: "0.55rem 1rem",
-              fontSize: "0.8125rem",
+              padding: "0.65rem 1rem",
+              backgroundColor: "#4f46e5",
+              color: "#ffffff",
+              fontSize: "0.875rem",
               fontWeight: 700,
-              textTransform: "none",
+              borderRadius: "8px",
+              textDecoration: "none",
+              transition: "background-color 0.15s ease",
+              boxSizing: "border-box",
             }}
+            onMouseEnter={(e) => (e.currentTarget.style.backgroundColor = "#4338ca")}
+            onMouseLeave={(e) => (e.currentTarget.style.backgroundColor = "#4f46e5")}
           >
             Comprar Agora
           </Link>

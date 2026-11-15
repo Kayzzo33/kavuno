@@ -14,154 +14,236 @@ export default async function HomePage() {
   ]);
 
   const { products } = catalogData;
+  const hasBanners = banners && banners.length > 0;
+  const isBannerMode = settings.hero_mode === "banner" && hasBanners;
+
+  // Se não houver banner cadastrado, o fluxo de hierarquia desce direto para os produtos / hot products
   const hotProduct = products.find((p) => p.is_featured) || products[0] || null;
   const secondaryHotProducts = products.filter((p) => p.id !== hotProduct?.id).slice(0, 4);
 
   return (
     <div style={{ backgroundColor: "#f8fafc", minHeight: "100vh", paddingBottom: "4rem" }}>
-      {/* 1. HERO BANNER PRINCIPAL (ESTILO NOVATECH: CARD BRANCO/GRADIENTE CLARO COM IMAGEM DESTACADA) */}
-      <section style={{ padding: "2rem 0" }}>
-        <div className="container">
-          <div
-            style={{
-              backgroundColor: "#ffffff",
-              borderRadius: "24px",
-              padding: "clamp(2rem, 5vw, 4rem)",
-              display: "grid",
-              gridTemplateColumns: "repeat(auto-fit, minmax(320px, 1fr))",
-              alignItems: "center",
-              gap: "2.5rem",
-              boxShadow: "0 10px 25px -5px rgba(0, 0, 0, 0.04)",
-              border: "1px solid #e2e8f0",
-              position: "relative",
-              overflow: "hidden",
-            }}
-          >
-            {/* Texto de Apresentação Hero */}
-            <div style={{ maxWidth: "540px", zIndex: 2 }}>
-              <div
+      {/* 1. SEÇÃO HERO: SE TIVER BANNER CADASTRADO E ATIVO EXIBE O BANNER, SENÃO SEGUE O FLUXO */}
+      {isBannerMode && hasBanners ? (
+        <section style={{ padding: "1.5rem 0" }}>
+          <div className="container">
+            <div
+              style={{
+                position: "relative",
+                width: "100%",
+                minHeight: "420px",
+                borderRadius: "24px",
+                overflow: "hidden",
+                border: "1px solid #e2e8f0",
+                display: "flex",
+                alignItems: "center",
+                padding: "clamp(2rem, 5vw, 4rem)",
+                backgroundColor: "#ffffff",
+                boxShadow: "0 4px 20px rgba(0,0,0,0.05)",
+              }}
+            >
+              <img
+                src={banners[0].image_url}
+                alt={banners[0].title}
                 style={{
-                  display: "inline-flex",
-                  alignItems: "center",
-                  gap: "0.5rem",
-                  backgroundColor: "#eef2ff",
-                  color: "#4f46e5",
-                  fontSize: "0.8125rem",
-                  fontWeight: 700,
-                  padding: "0.35rem 0.85rem",
-                  borderRadius: "9999px",
-                  marginBottom: "1rem",
+                  position: "absolute",
+                  inset: 0,
+                  width: "100%",
+                  height: "100%",
+                  objectFit: "cover",
                 }}
-              >
-                <span>🔥 Destaque em Produção</span>
-              </div>
-
-              <h1
-                style={{
-                  fontSize: "clamp(2rem, 4vw, 3.25rem)",
-                  fontWeight: 900,
-                  color: "#0f172a",
-                  lineHeight: 1.15,
-                  letterSpacing: "-0.03em",
-                  marginBottom: "1rem",
-                }}
-              >
-                {hotProduct ? hotProduct.name : "Manufatura Aditiva & Action Figures sob Medida"}
-              </h1>
-
-              <p
-                style={{
-                  fontSize: "1rem",
-                  color: "#64748b",
-                  lineHeight: 1.6,
-                  marginBottom: "1.75rem",
-                }}
-              >
-                {hotProduct?.short_description
-                  ? hotProduct.short_description.slice(0, 140) + "..."
-                  : "Colecionáveis, miniaturas e peças de engenharia com acabamento profissional e precisão geométrica."}
-              </p>
-
-              <div style={{ display: "flex", alignItems: "center", gap: "1rem", flexWrap: "wrap" }}>
-                <Link
-                  href={hotProduct ? `/produtos/${hotProduct.slug}` : "/catalogo"}
-                  style={{
-                    backgroundColor: "#4f46e5",
-                    color: "#ffffff",
-                    fontSize: "0.9375rem",
-                    fontWeight: 700,
-                    padding: "0.875rem 1.75rem",
-                    borderRadius: "12px",
-                    textDecoration: "none",
-                    boxShadow: "0 4px 12px rgba(79, 70, 229, 0.25)",
-                    display: "inline-flex",
-                    alignItems: "center",
-                    gap: "0.5rem",
-                  }}
-                >
-                  <span>Ver Detalhes</span>
-                  <svg width="18" height="18" viewBox="0 0 20 20" fill="currentColor">
-                    <path fillRule="evenodd" d="M10.293 3.293a1 1 0 011.414 0l6 6a1 1 0 010 1.414l-6 6a1 1 0 01-1.414-1.414L14.586 11H3a1 1 0 110-2h11.586l-4.293-4.293a1 1 0 010-1.414z" clipRule="evenodd" />
-                  </svg>
-                </Link>
-
-                {hotProduct && (
-                  <div style={{ fontSize: "1.5rem", fontWeight: 800, color: "#0f172a" }}>
-                    R$ {Number(hotProduct.base_price || 99).toFixed(2).replace(".", ",")}
-                  </div>
-                )}
-              </div>
-            </div>
-
-            {/* Imagem do Produto em Destaque Hero */}
-            <div style={{ display: "flex", justifyContent: "center", alignItems: "center", position: "relative" }}>
+              />
               <div
                 style={{
                   position: "absolute",
-                  width: "320px",
-                  height: "320px",
-                  borderRadius: "50%",
-                  background: "radial-gradient(circle, rgba(79, 70, 229, 0.12) 0%, transparent 70%)",
+                  inset: 0,
+                  background: "linear-gradient(to right, rgba(15, 23, 42, 0.85) 0%, rgba(15, 23, 42, 0.3) 60%, transparent 100%)",
                 }}
               />
-              <img
-                src={hotProduct?.images?.[0]?.image_url || "/logo.png"}
-                alt={hotProduct?.name || "Produto em Destaque"}
-                style={{
-                  maxWidth: "100%",
-                  maxHeight: "360px",
-                  objectFit: "contain",
-                  position: "relative",
-                  zIndex: 2,
-                  filter: "drop-shadow(0 20px 30px rgba(0, 0, 0, 0.12))",
-                }}
-              />
+              <div style={{ position: "relative", zIndex: 2, maxWidth: "560px" }}>
+                {banners[0].tag && (
+                  <span
+                    style={{
+                      display: "inline-block",
+                      fontSize: "0.75rem",
+                      fontWeight: 800,
+                      letterSpacing: "0.1em",
+                      textTransform: "uppercase",
+                      color: "#ffffff",
+                      backgroundColor: "#4f46e5",
+                      padding: "0.35rem 0.85rem",
+                      borderRadius: "9999px",
+                      marginBottom: "1rem",
+                    }}
+                  >
+                    {banners[0].tag}
+                  </span>
+                )}
+                <h1
+                  style={{
+                    fontSize: "clamp(2rem, 4vw, 3rem)",
+                    fontWeight: 900,
+                    color: "#ffffff",
+                    lineHeight: 1.15,
+                    marginBottom: "1rem",
+                  }}
+                >
+                  {banners[0].title}
+                </h1>
+                {banners[0].subtitle && (
+                  <p style={{ fontSize: "1rem", color: "#e2e8f0", lineHeight: 1.6, marginBottom: "1.75rem" }}>
+                    {banners[0].subtitle}
+                  </p>
+                )}
+                {banners[0].link_url && (
+                  <Link
+                    href={banners[0].link_url}
+                    style={{
+                      display: "inline-flex",
+                      alignItems: "center",
+                      gap: "0.5rem",
+                      backgroundColor: "#4f46e5",
+                      color: "#ffffff",
+                      fontWeight: 700,
+                      fontSize: "0.9375rem",
+                      padding: "0.85rem 1.75rem",
+                      borderRadius: "12px",
+                      textDecoration: "none",
+                    }}
+                  >
+                    {banners[0].button_text || "Conferir Agora"} &rarr;
+                  </Link>
+                )}
+              </div>
             </div>
           </div>
-        </div>
-      </section>
+        </section>
+      ) : (
+        /* HERO COM PRODUTO EM DESTAQUE CENTRALIZADO E ELEGANTE */
+        hotProduct && (
+          <section style={{ padding: "1.5rem 0" }}>
+            <div className="container">
+              <div
+                style={{
+                  backgroundColor: "#ffffff",
+                  borderRadius: "24px",
+                  padding: "clamp(2rem, 5vw, 3.5rem)",
+                  display: "grid",
+                  gridTemplateColumns: "repeat(auto-fit, minmax(300px, 1fr))",
+                  alignItems: "center",
+                  gap: "2.5rem",
+                  boxShadow: "0 4px 20px rgba(0, 0, 0, 0.04)",
+                  border: "1px solid #e2e8f0",
+                  position: "relative",
+                  overflow: "hidden",
+                }}
+              >
+                <div style={{ maxWidth: "520px" }}>
+                  <div
+                    style={{
+                      display: "inline-flex",
+                      alignItems: "center",
+                      gap: "0.5rem",
+                      backgroundColor: "#eef2ff",
+                      color: "#4f46e5",
+                      fontSize: "0.8125rem",
+                      fontWeight: 700,
+                      padding: "0.35rem 0.85rem",
+                      borderRadius: "9999px",
+                      marginBottom: "1rem",
+                    }}
+                  >
+                    <span>🔥 Destaque da Semana</span>
+                  </div>
 
-      {/* 2. CATEGORIAS DE PRODUTOS (ESTILO NOVATECH: CARDS BRANCOS COM ÍCONES E CONTADOR) */}
-      <section style={{ padding: "1.5rem 0 2.5rem" }}>
-        <div className="container">
-          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-end", marginBottom: "1.25rem" }}>
-            <div>
-              <span style={{ fontSize: "0.8125rem", fontWeight: 700, color: "#4f46e5", textTransform: "uppercase" }}>
-                Categorias
-              </span>
-              <h2 style={{ fontSize: "1.625rem", fontWeight: 800, color: "#0f172a", marginTop: "0.25rem" }}>
-                Navegar por Categoria
-              </h2>
+                  <h1
+                    style={{
+                      fontSize: "clamp(2rem, 3.5vw, 3rem)",
+                      fontWeight: 900,
+                      color: "#0f172a",
+                      lineHeight: 1.15,
+                      letterSpacing: "-0.03em",
+                      marginBottom: "1rem",
+                    }}
+                  >
+                    {hotProduct.name}
+                  </h1>
+
+                  <p
+                    style={{
+                      fontSize: "1rem",
+                      color: "#64748b",
+                      lineHeight: 1.6,
+                      marginBottom: "1.75rem",
+                    }}
+                  >
+                    {hotProduct.short_description || "Colecionável exclusivo de alta resolução impresso em 3D com acabamento profissional."}
+                  </p>
+
+                  <div style={{ display: "flex", alignItems: "center", gap: "1.25rem", flexWrap: "wrap" }}>
+                    <Link
+                      href={`/produtos/${hotProduct.slug}`}
+                      style={{
+                        backgroundColor: "#4f46e5",
+                        color: "#ffffff",
+                        fontSize: "0.9375rem",
+                        fontWeight: 700,
+                        padding: "0.85rem 1.75rem",
+                        borderRadius: "12px",
+                        textDecoration: "none",
+                        boxShadow: "0 4px 12px rgba(79, 70, 229, 0.25)",
+                        display: "inline-flex",
+                        alignItems: "center",
+                        gap: "0.5rem",
+                      }}
+                    >
+                      <span>Ver Detalhes</span>
+                      <svg width="18" height="18" viewBox="0 0 20 20" fill="currentColor">
+                        <path fillRule="evenodd" d="M10.293 3.293a1 1 0 011.414 0l6 6a1 1 0 010 1.414l-6 6a1 1 0 01-1.414-1.414L14.586 11H3a1 1 0 110-2h11.586l-4.293-4.293a1 1 0 010-1.414z" clipRule="evenodd" />
+                      </svg>
+                    </Link>
+
+                    <div style={{ fontSize: "1.625rem", fontWeight: 800, color: "#0f172a" }}>
+                      R$ {Number(hotProduct.base_price || 99).toFixed(2).replace(".", ",")}
+                    </div>
+                  </div>
+                </div>
+
+                {/* Imagem do Produto */}
+                <div style={{ display: "flex", justifyContent: "center", alignItems: "center", position: "relative" }}>
+                  <img
+                    src={hotProduct.images?.[0]?.image_url || "/logo.png"}
+                    alt={hotProduct.name}
+                    style={{
+                      maxWidth: "100%",
+                      maxHeight: "340px",
+                      objectFit: "contain",
+                      filter: "drop-shadow(0 15px 25px rgba(0, 0, 0, 0.1))",
+                    }}
+                  />
+                </div>
+              </div>
             </div>
-            <Link href="/catalogo" style={{ fontSize: "0.875rem", color: "#4f46e5", fontWeight: 600, textDecoration: "none" }}>
-              Ver todas ({categories.length}) →
-            </Link>
+          </section>
+        )
+      )}
+
+      {/* 2. CATEGORIAS DE PRODUTOS CENTRALIZADAS COM ÍCONES */}
+      <section style={{ padding: "2rem 0" }}>
+        <div className="container">
+          <div style={{ textAlign: "center", marginBottom: "2rem" }}>
+            <span style={{ fontSize: "0.8125rem", fontWeight: 700, color: "#4f46e5", textTransform: "uppercase", letterSpacing: "0.05em" }}>
+              Categorias
+            </span>
+            <h2 style={{ fontSize: "1.75rem", fontWeight: 800, color: "#0f172a", marginTop: "0.25rem" }}>
+              Navegar por Categoria
+            </h2>
           </div>
 
           <div
             style={{
               display: "grid",
-              gridTemplateColumns: "repeat(auto-fit, minmax(140px, 1fr))",
+              gridTemplateColumns: "repeat(auto-fit, minmax(130px, 1fr))",
               gap: "1rem",
             }}
           >
@@ -210,7 +292,7 @@ export default async function HomePage() {
         </div>
       </section>
 
-      {/* 3. BANNER HORIZONTAL SECUNDÁRIO DE PRODUTOS HOT (ESTILO IMAGEM ANEXADA) */}
+      {/* 3. BANNER HORIZONTAL DE PRODUTOS HOT CENTRALIZADO */}
       {secondaryHotProducts.length > 0 && (
         <section style={{ padding: "1.5rem 0 2.5rem" }}>
           <div className="container">
@@ -223,7 +305,6 @@ export default async function HomePage() {
                 gridTemplateColumns: "repeat(auto-fit, minmax(280px, 1fr))",
                 alignItems: "center",
                 gap: "2rem",
-                position: "relative",
                 overflow: "hidden",
               }}
             >
@@ -239,13 +320,13 @@ export default async function HomePage() {
                     borderRadius: "6px",
                   }}
                 >
-                  Oferta Especial
+                  Destaques Especiais
                 </span>
                 <h3 style={{ fontSize: "1.75rem", fontWeight: 800, color: "#1e1b4b", margin: "0.75rem 0" }}>
-                  Colecionáveis Exclusivos & Lotes Abertos
+                  Peças Exclusivas & Mais Procuradas
                 </h3>
                 <p style={{ fontSize: "0.9375rem", color: "#4338ca", maxWidth: "400px", lineHeight: 1.5 }}>
-                  Modelos de alta resolução impressos em filamentos premium com tolerância mecânica rigorosa.
+                  Modelos de alta fidelidade impressos em filamentos nobres com acabamento artesanal.
                 </p>
                 <div style={{ marginTop: "1.25rem" }}>
                   <Link
@@ -261,7 +342,7 @@ export default async function HomePage() {
                       display: "inline-block",
                     }}
                   >
-                    Aproveitar Lotes
+                    Ver Todo o Catálogo &rarr;
                   </Link>
                 </div>
               </div>
@@ -306,92 +387,28 @@ export default async function HomePage() {
         </section>
       )}
 
-      {/* 4. GRADE DE PRODUTOS REAIS (MAIS VENDIDOS / EXPLORE NOSSO CATÁLOGO) */}
+      {/* 4. GRADE DE PRODUTOS REAIS (MAIS VENDIDOS) COM TÍTULO CENTRALIZADO */}
       <section style={{ padding: "1.5rem 0" }}>
         <div className="container">
-          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-end", marginBottom: "1.5rem" }}>
-            <div>
-              <span style={{ fontSize: "0.8125rem", fontWeight: 700, color: "#4f46e5", textTransform: "uppercase" }}>
-                Coleção Completa
-              </span>
-              <h2 style={{ fontSize: "1.625rem", fontWeight: 800, color: "#0f172a", marginTop: "0.25rem" }}>
-                Modelos Disponíveis
-              </h2>
-            </div>
-            <Link
-              href="/catalogo"
-              style={{
-                fontSize: "0.875rem",
-                fontWeight: 600,
-                color: "#4f46e5",
-                textDecoration: "none",
-                display: "inline-flex",
-                alignItems: "center",
-                gap: "0.25rem",
-              }}
-            >
-              <span>Ver todos os produtos</span>
-              <svg width="16" height="16" viewBox="0 0 20 20" fill="currentColor">
-                <path fillRule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clipRule="evenodd" />
-              </svg>
-            </Link>
+          <div style={{ textAlign: "center", marginBottom: "2.5rem" }}>
+            <span style={{ fontSize: "0.8125rem", fontWeight: 700, color: "#4f46e5", textTransform: "uppercase", letterSpacing: "0.05em" }}>
+              Nossos Produtos
+            </span>
+            <h2 style={{ fontSize: "1.75rem", fontWeight: 800, color: "#0f172a", marginTop: "0.25rem" }}>
+              Explore Nossos Mais Vendidos
+            </h2>
           </div>
 
           <div
             style={{
               display: "grid",
-              gridTemplateColumns: "repeat(auto-fill, minmax(240px, 1fr))",
+              gridTemplateColumns: "repeat(auto-fill, minmax(260px, 1fr))",
               gap: "1.5rem",
             }}
           >
             {products.map((product) => (
               <ProductCard key={product.id} product={product} />
             ))}
-          </div>
-        </div>
-      </section>
-
-      {/* 5. VANTAGENS E BENEFÍCIOS DO E-COMMERCE NO RODAPÉ */}
-      <section style={{ marginTop: "3rem", borderTop: "1px solid #e2e8f0", backgroundColor: "#ffffff", padding: "2.5rem 0" }}>
-        <div className="container">
-          <div
-            style={{
-              display: "grid",
-              gridTemplateColumns: "repeat(auto-fit, minmax(220px, 1fr))",
-              gap: "2rem",
-            }}
-          >
-            <div style={{ display: "flex", alignItems: "center", gap: "1rem" }}>
-              <div style={{ fontSize: "2rem", color: "#4f46e5" }}>🚚</div>
-              <div>
-                <div style={{ fontWeight: 700, color: "#0f172a", fontSize: "0.9375rem" }}>Frete Seguro</div>
-                <div style={{ fontSize: "0.8125rem", color: "#64748b" }}>Envio rastreado para todo o Brasil</div>
-              </div>
-            </div>
-
-            <div style={{ display: "flex", alignItems: "center", gap: "1rem" }}>
-              <div style={{ fontSize: "2rem", color: "#4f46e5" }}>⚙️</div>
-              <div>
-                <div style={{ fontWeight: 700, color: "#0f172a", fontSize: "0.9375rem" }}>Precisão Geométrica</div>
-                <div style={{ fontSize: "0.8125rem", color: "#64748b" }}>Camadas de 0.12mm a 0.20mm</div>
-              </div>
-            </div>
-
-            <div style={{ display: "flex", alignItems: "center", gap: "1rem" }}>
-              <div style={{ fontSize: "2rem", color: "#4f46e5" }}>🔒</div>
-              <div>
-                <div style={{ fontWeight: 700, color: "#0f172a", fontSize: "0.9375rem" }}>Pagamento Protegido</div>
-                <div style={{ fontSize: "0.8125rem", color: "#64748b" }}>Mercado Pago via PIX e Cartão</div>
-              </div>
-            </div>
-
-            <div style={{ display: "flex", alignItems: "center", gap: "1rem" }}>
-              <div style={{ fontSize: "2rem", color: "#4f46e5" }}>💬</div>
-              <div>
-                <div style={{ fontWeight: 700, color: "#0f172a", fontSize: "0.9375rem" }}>Suporte Especializado</div>
-                <div style={{ fontSize: "0.8125rem", color: "#64748b" }}>Atendimento técnico dedicado</div>
-              </div>
-            </div>
           </div>
         </div>
       </section>

@@ -4,17 +4,13 @@ import { createClient } from "@/lib/supabase/server";
 import { signOutAction } from "@/app/auth/actions";
 import { CartNavbarButton } from "@/components/layout/CartNavbarButton";
 import { NavbarSearch } from "@/components/layout/NavbarSearch";
-import { getSiteSettings, getActiveCategories } from "@/lib/catalog/queries";
+import { getSiteSettings } from "@/lib/catalog/queries";
 
 export const Navbar = async () => {
   let userName: string | null = null;
   let isAuthenticated = false;
-  let isAdmin = false;
 
-  const [settings, categories] = await Promise.all([
-    getSiteSettings(),
-    getActiveCategories(),
-  ]);
+  const settings = await getSiteSettings();
 
   try {
     const supabase = await createClient();
@@ -32,36 +28,29 @@ export const Navbar = async () => {
         .maybeSingle();
 
       if (profile?.full_name) userName = profile.full_name;
-      if (profile?.role === "admin") isAdmin = true;
     }
   } catch {
     // Silencioso para navegação anônima
   }
 
+  // Prepara o texto do anúncio para o marquee contínuo
+  const announcementText =
+    settings.announcement_text ||
+    "🚚 Frete Grátis para todo Brasil acima de R$ 199 • 🛡️ Garantia de Acabamento 3D • ⚡ Despacho Rápido de Pronta Entrega • 🎯 Precisão Geométrica Rigorosa • ";
+
   return (
     <>
-      {/* 1. Barra Superior Informativa (Branca / Azul Claro com frete grátis) */}
-      <div
-        style={{
-          backgroundColor: "#f8fafc",
-          borderBottom: "1px solid #e2e8f0",
-          fontSize: "0.75rem",
-          color: "#475569",
-          padding: "0.4rem 0",
-          textAlign: "center",
-          fontWeight: 500,
-        }}
-      >
-        <div className="container" style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-          <span>📦 {settings.announcement_text || "Frete Grátis em pedidos acima de R$ 199"}</span>
-          <div style={{ display: "flex", gap: "1rem" }}>
-            <span>⚡ Manufatura Aditiva de Alta Precisão</span>
-            <span>⭐ Garantia de Acabamento 3D</span>
-          </div>
+      {/* 1. LETREIRO SUPERIOR EM MARQUEE CONTÍNUO (SEM FUNDO LARANJA / TOTALMENTE FLUIDO) */}
+      <div className="announcement-marquee-wrapper">
+        <div className="announcement-marquee-track">
+          <span>{announcementText}</span>
+          <span>{announcementText}</span>
+          <span>{announcementText}</span>
+          <span>{announcementText}</span>
         </div>
       </div>
 
-      {/* 2. Header Principal Branco com Sombra Leve */}
+      {/* 2. HEADER PRINCIPAL BRANCO E LIMPO */}
       <header
         style={{
           backgroundColor: "#ffffff",
@@ -69,7 +58,7 @@ export const Navbar = async () => {
           position: "sticky",
           top: 0,
           zIndex: 50,
-          boxShadow: "0 2px 4px rgba(0, 0, 0, 0.02)",
+          boxShadow: "0 1px 3px rgba(0, 0, 0, 0.03)",
         }}
       >
         <div
@@ -78,18 +67,17 @@ export const Navbar = async () => {
             display: "flex",
             alignItems: "center",
             justifyContent: "space-between",
-            gap: "2rem",
+            gap: "1.5rem",
             paddingTop: "0.85rem",
             paddingBottom: "0.85rem",
           }}
         >
-          {/* Logo da Loja */}
+          {/* Logo da Loja Grande e Nítida */}
           <Link
             href="/"
             style={{
               display: "flex",
               alignItems: "center",
-              gap: "0.5rem",
               textDecoration: "none",
               flexShrink: 0,
             }}
@@ -98,20 +86,20 @@ export const Navbar = async () => {
               src="/logo.png"
               alt="KAVUNO Logo"
               style={{
-                height: "36px",
+                height: "46px", // Logo maior conforme solicitado
                 width: "auto",
                 objectFit: "contain",
-                filter: "invert(1)", // Torna a logo branca legível no fundo branco
+                filter: "invert(1)", // Torna o logo branco nítido no header branco
               }}
             />
           </Link>
 
-          {/* Links Centrais de Navegação (Estilo NovaTech) */}
+          {/* Links Centrais de Navegação */}
           <nav
             style={{
               display: "flex",
               alignItems: "center",
-              gap: "1.75rem",
+              gap: "1.5rem",
               fontSize: "0.9375rem",
               fontWeight: 600,
             }}
@@ -128,69 +116,57 @@ export const Navbar = async () => {
             <Link href="/catalogo?modalidade=pre_order" style={{ color: "#475569", textDecoration: "none" }}>
               Pré-Vendas
             </Link>
-            {isAdmin && (
-              <Link
-                href="/admin"
-                style={{
-                  color: "#008060",
-                  textDecoration: "none",
-                  fontWeight: 700,
-                  display: "flex",
-                  alignItems: "center",
-                  gap: "0.25rem",
-                }}
-              >
-                <span style={{ width: "8px", height: "8px", borderRadius: "50%", backgroundColor: "#008060" }} />
-                Painel Admin
-              </Link>
-            )}
           </nav>
 
-          {/* Campo de Busca Inteligente estilo NovaTech */}
-          <div style={{ flex: 1, maxWidth: "380px" }}>
-            <Suspense fallback={<div style={{ height: "40px" }} />}>
+          {/* Campo de Busca Centralizado e Alinhado */}
+          <div style={{ flex: 1, maxWidth: "420px" }}>
+            <Suspense fallback={<div style={{ height: "42px" }} />}>
               <NavbarSearch />
             </Suspense>
           </div>
 
-          {/* Ações do Usuário & Carrinho */}
+          {/* Área do Usuário & Carrinho */}
           <div style={{ display: "flex", alignItems: "center", gap: "1rem", flexShrink: 0 }}>
             {isAuthenticated ? (
-              <div style={{ display: "flex", alignItems: "center", gap: "0.75rem" }}>
+              <div style={{ display: "flex", alignItems: "center", gap: "0.625rem" }}>
                 <Link
                   href="/perfil"
+                  title="Meu Perfil"
                   style={{
                     display: "flex",
                     alignItems: "center",
                     gap: "0.5rem",
                     textDecoration: "none",
                     color: "#0f172a",
-                    fontSize: "0.875rem",
-                    fontWeight: 600,
                   }}
                 >
+                  {/* Ícone Redondo com Inicial / Perfil */}
                   <div
                     style={{
-                      width: "32px",
-                      height: "32px",
+                      width: "36px",
+                      height: "36px",
                       borderRadius: "50%",
                       backgroundColor: "#4f46e5",
                       color: "#ffffff",
                       display: "flex",
                       alignItems: "center",
                       justifyContent: "center",
-                      fontSize: "0.8125rem",
+                      fontSize: "0.875rem",
                       fontWeight: 700,
                     }}
                   >
                     {userName ? userName.charAt(0).toUpperCase() : "U"}
                   </div>
-                  <span>{userName?.split(" ")[0]}</span>
+                  {/* Exibe apenas o primeiro nome (NUNCA email completo) */}
+                  <span style={{ fontSize: "0.875rem", fontWeight: 600, maxWidth: "100px", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
+                    {userName?.split(" ")[0] || "Minha Conta"}
+                  </span>
                 </Link>
 
                 <form action={signOutAction}>
                   <button
                     type="submit"
+                    title="Sair"
                     style={{
                       background: "none",
                       border: "none",
@@ -235,7 +211,7 @@ export const Navbar = async () => {
               </div>
             )}
 
-            {/* Botão de Carrinho com badge */}
+            {/* Carrinho de Compras */}
             <CartNavbarButton />
           </div>
         </div>
